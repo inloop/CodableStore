@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'CodableStore_Example' do
+  pod 'CodableStore', :path => '../'
+
+  target 'CodableStore_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
