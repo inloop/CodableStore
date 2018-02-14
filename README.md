@@ -1,13 +1,58 @@
 # CodableStore
 
-[![CI Status](http://img.shields.io/travis/Jakub Knejzlik/CodableStore.svg?style=flat)](https://travis-ci.org/Jakub Knejzlik/CodableStore)
+[![CI Status](http://img.shields.io/travis/inloop/CodableStore.svg?style=flat)](https://travis-ci.org/inloop/CodableStore)
 [![Version](https://img.shields.io/cocoapods/v/CodableStore.svg?style=flat)](http://cocoapods.org/pods/CodableStore)
 [![License](https://img.shields.io/cocoapods/l/CodableStore.svg?style=flat)](http://cocoapods.org/pods/CodableStore)
 [![Platform](https://img.shields.io/cocoapods/p/CodableStore.svg?style=flat)](http://cocoapods.org/pods/CodableStore)
 
 ## Example
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+`UserDefaults` as storage provider:
+
+```
+let store = CodableStore(provider: UserDefaults.standard)
+
+let tesla = Company(name: "Tesla")
+let companyKey = "somekey"
+
+tesla.create(store, key: companyKey).then { (company: Company?) -> Void in
+    // company: Company?
+}
+Company.read(store, key: companyKey).then { company -> Void in
+    // company: Company?
+}
+```
+
+`URLSession` as storage provider:
+
+```
+struct Post: Codable {
+    let title: String
+    let body: String
+}
+
+let store = CodableStore(provider: URLSession.shared)
+
+let url = URL(string: "http://jsonplaceholder.typicode.com/posts")!
+let detailUrl = URL(string: "http://jsonplaceholder.typicode.com/posts/1")!
+
+[Post].read(store, key: url).then { posts -> Void in
+    // posts: [Post]?
+}
+
+Post.read(store, key: url).then { post -> Void in
+    // post: Post?
+}
+
+let newPost = Port(title: "Foo", body: "Blah")
+newPost.create(store, key: url).then { (post: Post?) -> Void in
+    // post: Post?
+}
+```
+
+### URLSession custom URLRequest
+
+## Custom provider
 
 ## Requirements
 

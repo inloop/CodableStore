@@ -30,7 +30,7 @@ class Tests: QuickSpec {
                 let tesla = Company(name: "Tesla")
                 let spacex = Company(name: "SpaceX")
 
-                let companiesKey = "musks_companies"
+                let companiesKey = "companies"
 
                 [tesla,spacex].create(store, key: companiesKey).then { (companies: [Company]?) -> Promise<[Company]?> in
                     return [Company].read(store, key: companiesKey)
