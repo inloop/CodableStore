@@ -24,10 +24,12 @@ extension UserDefaults: CodableStoreProvider {
     }
 
     public func create<T, U>(_ item: T, for key: String) -> Promise<U?> where T : Encodable, U : Decodable {
-        return Promise(resolvers: { (resolve, reject) in
+        do {
             let data = try item.serialize() as Data
             set(data, forKey: key)
-            resolve(nil)
-        })
+        } catch {
+            return Promise(error: error)
+        }
+        return read(key: key)
     }
 }
