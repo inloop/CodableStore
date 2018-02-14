@@ -1,0 +1,6 @@
+framework module CodableStore {
+  umbrella header "CodableStore-umbrella.h"
+
+  export *
+  module * { export * }
+}

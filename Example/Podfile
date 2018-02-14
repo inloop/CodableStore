@@ -5,7 +5,9 @@ target 'CodableStore_Example' do
 
   target 'CodableStore_Tests' do
     inherit! :search_paths
+    pod 'CodableStore', :path => '../'
 
-    
+    pod 'Nimble', '~> 7.0'
+    pod 'Quick', '~> 1.2'
   end
 end

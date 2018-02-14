@@ -1,0 +1,27 @@
+{
+  "name": "CodableStore",
+  "version": "0.1.0",
+  "summary": "A short description of CodableStore.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/Jakub Knejzlik/CodableStore",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "Jakub Knejzlik": "jakub.knejzlik@inloop.eu"
+  },
+  "source": {
+    "git": "https://github.com/Jakub Knejzlik/CodableStore.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source_files": "CodableStore/Classes/**/*",
+  "dependencies": {
+    "PromiseKit": [
+      "~> 4.4"
+    ]
+  }
+}
