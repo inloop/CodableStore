@@ -12,7 +12,7 @@ extension UserDefaults: CodableStoreProvider {
 
     public typealias KeyType = String
 
-    public func read<T>(key: String) -> Promise<T?> where T : Decodable {
+    public func read<T>(_ key: String) -> Promise<T?> where T : Decodable {
         guard let data = data(forKey: key) else {
             return Promise(value: nil)
         }
@@ -30,6 +30,6 @@ extension UserDefaults: CodableStoreProvider {
         } catch {
             return Promise(error: error)
         }
-        return read(key: key)
+        return read(key)
     }
 }

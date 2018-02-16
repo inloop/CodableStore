@@ -20,7 +20,7 @@ extension URLSession: CodableStoreProvider {
 
     public typealias KeyType = URL
 
-    public func read<T>(key: URL) -> Promise<T?> where T : Decodable {
+    public func read<T>(_ key: URL) -> Promise<T?> where T : Decodable {
         return send(URLRequest(url: key)).then { res in
             return res.data
         }

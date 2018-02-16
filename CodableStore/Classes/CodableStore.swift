@@ -15,7 +15,7 @@ public protocol CodableStoreProvider {
 
     associatedtype KeyType
 
-    func read<T: Decodable>(key: KeyType) -> Promise<T?>
+    func read<T: Decodable>(_ key: KeyType) -> Promise<T?>
     func create<T: Encodable, U: Decodable>(_ item: T, for key: KeyType) -> Promise<U?>
 }
 
@@ -27,7 +27,7 @@ public class CodableStore<P: CodableStoreProvider> {
     }
 
     public func read<T: Decodable>(_ key: P.KeyType) -> Promise<T?> {
-        return provider.read(key: key)
+        return provider.read(key)
     }
 
     public func create<T: Encodable, U: Decodable>(_ item: T, for key: P.KeyType) -> Promise<U?> {
@@ -36,13 +36,13 @@ public class CodableStore<P: CodableStoreProvider> {
 }
 
 extension Decodable {
-    public static func read<P>(_ store: CodableStore<P>, key: P.KeyType) -> Promise<Self?> {
-        return store.read(key)
+    public static func read<P: CodableStoreProvider>(_ provider: P, key: P.KeyType) -> Promise<Self?> {
+        return provider.read(key)
     }
 }
 
 extension Encodable {
-    public func create<P, U: Decodable>(_ store: CodableStore<P>, key: P.KeyType) -> Promise<U?> {
-        return store.create(self, for: key)
+    public func create<P: CodableStoreProvider, U: Decodable>(_ provider: P, key: P.KeyType) -> Promise<U?> {
+        return provider.create(self, for: key)
     }
 }

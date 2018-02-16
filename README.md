@@ -10,15 +10,19 @@
 `UserDefaults` as storage provider:
 
 ```
-let store = CodableStore(provider: UserDefaults.standard)
+struct Company {
+    let name: String
+}
+
+let provider = UserDefaults.standard
 
 let tesla = Company(name: "Tesla")
 let companyKey = "somekey"
 
-tesla.create(store, key: companyKey).then { (company: Company?) -> Void in
+tesla.create(provider, key: companyKey).then { (company: Company?) -> Void in
     // company: Company?
 }
-Company.read(store, key: companyKey).then { company -> Void in
+Company.read(provider, key: companyKey).then { company -> Void in
     // company: Company?
 }
 ```
@@ -31,7 +35,7 @@ struct Post: Codable {
     let body: String
 }
 
-let store = CodableStore(provider: URLSession.shared)
+let provider = URLSession.shared
 
 let url = URL(string: "http://jsonplaceholder.typicode.com/posts")!
 let detailUrl = URL(string: "http://jsonplaceholder.typicode.com/posts/1")!
