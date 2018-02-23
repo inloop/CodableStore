@@ -8,16 +8,6 @@
 import Foundation
 import PromiseKit
 
-extension String: CodableStoreSource {
-    public func get<T>() -> Promise<T?> where T : Decodable {
-        return UserDefaults.standard.get(self)
-    }
-
-    public func set<T, U>(_ item: T) -> Promise<U?> where T : Encodable, U : Decodable {
-        return UserDefaults.standard.set(item, for: self)
-    }
-}
-
 extension UserDefaults: CodableStoreProvider {
 
     public typealias KeyType = String

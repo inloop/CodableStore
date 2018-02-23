@@ -167,6 +167,7 @@
 		EAE2AAE5EB826B38978692984BB22FDD /* RaisesException.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E111D0D6190F7BC3EF68346A885C82 /* RaisesException.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		EB3A73071ABA60E77E0704649637D8BD /* SatisfyAnyOf.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6536D8AC815D9367A8E6B514A91B8E8 /* SatisfyAnyOf.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		ED1EF542ED4EEDC0E64690E90936CADE /* URLSession+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D088E9571266DD32910AEC38F6B9C7A /* URLSession+Codable.swift */; };
+		EED96A95204042D6007FD093 /* Source.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED96A94204042D6007FD093 /* Source.swift */; };
 		EF8548E0C37E8888D9DDC11ED89D3568 /* Predicate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93197CC88C21EEB42E8A6A509710CA9 /* Predicate.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		F07AE2E7161E73F9A38E6EBD8C71A960 /* QuickSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 367E356A71E8B3C35907736F1614B5A2 /* QuickSpec.m */; };
 		F0C0B5E4CAB5FAC459DFFBE9C4F0A601 /* wrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AC8822C5482DC819A815C1288BC4C5C /* wrap.swift */; };
@@ -428,6 +429,7 @@
 		EA885E47B4DD7098DCED13FAEDE124DC /* CALayer+AnyPromise.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CALayer+AnyPromise.m"; path = "Extensions/QuartzCore/Sources/CALayer+AnyPromise.m"; sourceTree = "<group>"; };
 		EC057714ACF9BA0FC3A6E727CE1B70B3 /* MatchError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MatchError.swift; path = Sources/Nimble/Matchers/MatchError.swift; sourceTree = "<group>"; };
 		EC20A7C4F7937A24ECFFDCC12826ABC9 /* QuickConfiguration.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QuickConfiguration.h; path = Sources/QuickObjectiveC/Configuration/QuickConfiguration.h; sourceTree = "<group>"; };
+		EED96A94204042D6007FD093 /* Source.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Source.swift; path = CodableStore/Classes/Source.swift; sourceTree = "<group>"; };
 		EF634DE84F013D2AE7EC2159506447AB /* CwlCatchException.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CwlCatchException.swift; path = Carthage/Checkouts/CwlCatchException/Sources/CwlCatchException/CwlCatchException.swift; sourceTree = "<group>"; };
 		EF9F733DF1A9FE7280494DB64D0CB4CD /* AnyPromise.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnyPromise.swift; path = Sources/AnyPromise.swift; sourceTree = "<group>"; };
 		F2AB9482661BDE72C6C705687CD377DA /* URL+FileName.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "URL+FileName.swift"; path = "Sources/Quick/URL+FileName.swift"; sourceTree = "<group>"; };
@@ -609,6 +611,7 @@
 			isa = PBXGroup;
 			children = (
 				2073D002552069F3ACE9B5339A93F9FC /* CodableStore.swift */,
+				EED96A94204042D6007FD093 /* Source.swift */,
 				98F8913C2322C1AF4018BF0F2E4A94AF /* Serialization.swift */,
 				4D088E9571266DD32910AEC38F6B9C7A /* URLSession+Codable.swift */,
 				4008CF672060D3A3303DC181EF33327D /* UserDefaults+Codable.swift */,
@@ -1082,6 +1085,14 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0830;
 				LastUpgradeCheck = 0700;
+				TargetAttributes = {
+					0194E4A464C4C6813B2E95A20E126EA7 = {
+						LastSwiftMigration = 0920;
+					};
+					D14154269B244B3157D8CF7DEE2FB960 = {
+						LastSwiftMigration = 0920;
+					};
+				};
 			};
 			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1111,6 +1122,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E0FE89474DC29498E0D00E25D72EE67E /* CodableStore-dummy.m in Sources */,
+				EED96A95204042D6007FD093 /* Source.swift in Sources */,
 				1A5095F391D0F7F79D30977EA5439E89 /* CodableStore.swift in Sources */,
 				DE27C68A6F8027D1A002E45C73CB7539 /* Serialization.swift in Sources */,
 				ED1EF542ED4EEDC0E64690E90936CADE /* URLSession+Codable.swift in Sources */,
@@ -1330,6 +1342,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 978F731C69495635616421BB7A597A90 /* Pods-CodableStore_Example.release.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -1353,6 +1366,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1458,6 +1472,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4284ADB1DF88FF1521B960C770FCFE14 /* Pods-CodableStore_Tests.debug.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -1482,6 +1497,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -1524,6 +1540,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6D23F6B32E4AD6D733D3DD353F9CE8BE /* Pods-CodableStore_Tests.release.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -1547,6 +1564,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1621,6 +1639,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 380A884E9D4C8A2623BF082488A39A6A /* Pods-CodableStore_Example.debug.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
@@ -1645,6 +1664,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";

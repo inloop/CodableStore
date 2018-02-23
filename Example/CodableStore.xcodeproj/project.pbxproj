@@ -15,6 +15,7 @@
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		71DBB94FBC14CB63B7482BC3 /* Pods_CodableStore_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AEF89F59968100D6F8AEB1F4 /* Pods_CodableStore_Example.framework */; };
 		DB1CB6085ACD354F33EB1098 /* Pods_CodableStore_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F64FA7F7E8C9A05F1AE0D26A /* Pods_CodableStore_Tests.framework */; };
+		EED96A932040408E007FD093 /* EnvironmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED96A922040408E007FD093 /* EnvironmentTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,7 @@
 		A2E467917897E9C472446CCF /* Pods-CodableStore_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CodableStore_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-CodableStore_Example/Pods-CodableStore_Example.release.xcconfig"; sourceTree = "<group>"; };
 		AEF89F59968100D6F8AEB1F4 /* Pods_CodableStore_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CodableStore_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB59185BC673A2E98C70CA07 /* CodableStore.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = CodableStore.podspec; path = ../CodableStore.podspec; sourceTree = "<group>"; };
+		EED96A922040408E007FD093 /* EnvironmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentTests.swift; sourceTree = "<group>"; };
 		F64FA7F7E8C9A05F1AE0D26A /* Pods_CodableStore_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CodableStore_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -129,6 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				607FACEB1AFB9204008FA782 /* Tests.swift */,
+				EED96A922040408E007FD093 /* EnvironmentTests.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
@@ -405,6 +408,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				607FACEC1AFB9204008FA782 /* Tests.swift in Sources */,
+				EED96A932040408E007FD093 /* EnvironmentTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

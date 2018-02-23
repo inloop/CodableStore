@@ -57,6 +57,7 @@ class Tests: QuickSpec {
                     }
                     ids.append(contentsOf: posts.map { $0.id })
                 }
+
                 expect(ids).toEventually(contain([1,2,3]), timeout: 5)
             }
 

@@ -8,11 +8,6 @@
 import Foundation
 import PromiseKit
 
-public protocol CodableStoreSource {
-    func get<T: Decodable>() -> Promise<T?>
-    func set<T: Encodable, U: Decodable>(_ item: T) -> Promise<U?>
-}
-
 public protocol CodableStoreProvider {
 
     associatedtype KeyType
@@ -21,20 +16,61 @@ public protocol CodableStoreProvider {
     func set<T: Encodable, U: Decodable>(_ item: T, for key: KeyType) -> Promise<U?>
 }
 
-public class CodableStore<P: CodableStoreProvider> {
+public protocol CodableStoreEnvironment {
+    static var sourceBase: CodableStoreSource { get }
 
-    private let provider: P
+    typealias Get<T: Decodable> = CodableStore<Self>.GetEndpoint<T>
+    typealias Set<T: Encodable, U: Decodable> = CodableStore<Self>.SetEndpoint<T, U>
+}
 
-    init(provider: P) {
-        self.provider = provider
+public protocol CodableStoreCrudEnvironment {
+    static var sourceBase: CodableStoreSource { get }
+}
+
+public class CodableStore<E: CodableStoreEnvironment> {
+    let environment: E.Type
+
+    init(_ environment: E.Type) {
+        self.environment = environment
     }
 
-    public func get<T: Decodable>(_ key: P.KeyType) -> Promise<T?> {
-        return provider.get(key)
+    func get<T>(from: CodableStore.GetEndpoint<T>) -> Promise<T?> {
+        let sourceWithPath = self.environment.sourceBase.appending(from.path)
+        return sourceWithPath.get()
     }
 
-    public func set<T: Encodable, U: Decodable>(_ item: T, for key: P.KeyType) -> Promise<U?> {
-        return provider.set(item, for: key)
+    func set<T, U>(_ item: T, in endpoint: CodableStore.SetEndpoint<T,U>) -> Promise<U?> {
+        let sourceWithPath = self.environment.sourceBase.appending(endpoint.path)
+        return sourceWithPath.set(item)
+    }
+}
+
+extension CodableStore {
+    public struct GetEndpoint<T: Decodable> {
+        let path: String
+
+        public init(_ path: String) {
+            self.path = path
+        }
+    }
+
+    public struct SetEndpoint<T: Encodable, U: Decodable> {
+        let path: String
+
+        public init(_ path: String) {
+            self.path = path
+        }
+    }
+}
+
+extension CodableStore.GetEndpoint: ExpressibleByStringLiteral {
+    public init(stringLiteral value: String) {
+        self.init(value)
+    }
+}
+extension CodableStore.SetEndpoint: ExpressibleByStringLiteral {
+    public init(stringLiteral value: String) {
+        self.init(value)
     }
 }
 

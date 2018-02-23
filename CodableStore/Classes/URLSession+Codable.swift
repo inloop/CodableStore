@@ -7,18 +7,6 @@
 import Foundation
 import PromiseKit
 
-extension URL: CodableStoreSource {
-    public func get<T>() -> Promise<T?> where T : Decodable {
-        return URLSession.shared.get(self)
-    }
-
-    public func set<T, U>(_ item: T) -> Promise<U?> where T : Encodable, U : Decodable {
-        return URLSession.shared.set(item, for: self)
-    }
-}
-
-
-
 enum URLSessionCodableError: Error {
     case unexpectedStatusCode(statusCode: Int)
 }
