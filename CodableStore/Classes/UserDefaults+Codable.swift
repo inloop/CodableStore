@@ -8,11 +8,21 @@
 import Foundation
 import PromiseKit
 
+extension String: CodableStoreSource {
+    public func get<T>() -> Promise<T?> where T : Decodable {
+        return UserDefaults.standard.get(self)
+    }
+
+    public func set<T, U>(_ item: T) -> Promise<U?> where T : Encodable, U : Decodable {
+        return UserDefaults.standard.set(item, for: self)
+    }
+}
+
 extension UserDefaults: CodableStoreProvider {
 
     public typealias KeyType = String
 
-    public func read<T>(_ key: String) -> Promise<T?> where T : Decodable {
+    public func get<T>(_ key: String) -> Promise<T?> where T : Decodable {
         guard let data = data(forKey: key) else {
             return Promise(value: nil)
         }
@@ -23,13 +33,13 @@ extension UserDefaults: CodableStoreProvider {
         }
     }
 
-    public func create<T, U>(_ item: T, for key: String) -> Promise<U?> where T : Encodable, U : Decodable {
+    public func set<T, U>(_ item: T, for key: String) -> Promise<U?> where T : Encodable, U : Decodable {
         do {
             let data = try item.serialize() as Data
             set(data, forKey: key)
         } catch {
             return Promise(error: error)
         }
-        return read(key)
+        return get(key)
     }
 }

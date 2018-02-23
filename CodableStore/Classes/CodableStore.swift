@@ -8,41 +8,44 @@
 import Foundation
 import PromiseKit
 
-
-protocol CodableStoreResponse {}
+public protocol CodableStoreSource {
+    func get<T: Decodable>() -> Promise<T?>
+    func set<T: Encodable, U: Decodable>(_ item: T) -> Promise<U?>
+}
 
 public protocol CodableStoreProvider {
 
     associatedtype KeyType
 
-    func read<T: Decodable>(_ key: KeyType) -> Promise<T?>
-    func create<T: Encodable, U: Decodable>(_ item: T, for key: KeyType) -> Promise<U?>
+    func get<T: Decodable>(_ key: KeyType) -> Promise<T?>
+    func set<T: Encodable, U: Decodable>(_ item: T, for key: KeyType) -> Promise<U?>
 }
 
 public class CodableStore<P: CodableStoreProvider> {
+
     private let provider: P
 
     init(provider: P) {
         self.provider = provider
     }
 
-    public func read<T: Decodable>(_ key: P.KeyType) -> Promise<T?> {
-        return provider.read(key)
+    public func get<T: Decodable>(_ key: P.KeyType) -> Promise<T?> {
+        return provider.get(key)
     }
 
-    public func create<T: Encodable, U: Decodable>(_ item: T, for key: P.KeyType) -> Promise<U?> {
-        return provider.create(item, for: key)
+    public func set<T: Encodable, U: Decodable>(_ item: T, for key: P.KeyType) -> Promise<U?> {
+        return provider.set(item, for: key)
     }
 }
 
 extension Decodable {
-    public static func read<P: CodableStoreProvider>(_ provider: P, key: P.KeyType) -> Promise<Self?> {
-        return provider.read(key)
+    public static func get<S: CodableStoreSource>(_ source: S) -> Promise<Self?> {
+        return source.get()
     }
 }
 
 extension Encodable {
-    public func create<P: CodableStoreProvider, U: Decodable>(_ provider: P, key: P.KeyType) -> Promise<U?> {
-        return provider.create(self, for: key)
+    public func set<S: CodableStoreSource, U: Decodable>(_ source: S) -> Promise<U?> {
+        return source.set(self)
     }
 }

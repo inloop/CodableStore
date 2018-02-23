@@ -13,14 +13,12 @@ class Tests: QuickSpec {
     override func spec() {
         describe("userdefaults store") {
 
-            let provider = UserDefaults.standard
-
             it("instance") {
                 let tesla = Company(name: "Tesla")
                 let teslaKey = "tesla_company"
 
-                tesla.create(provider, key: teslaKey).then { (company: Company?) -> Promise<Company?> in
-                    return Company.read(provider, key: teslaKey)
+                teslaKey.set(tesla).then { (company: Company?) -> Promise<Company?> in
+                    return teslaKey.get()
                 }.then { _tesla -> Void in
                     expect(tesla.name).to(equal(_tesla?.name))
                 }
@@ -32,8 +30,8 @@ class Tests: QuickSpec {
 
                 let companiesKey = "companies"
 
-                [tesla,spacex].create(provider, key: companiesKey).then { (companies: [Company]?) -> Promise<[Company]?> in
-                    return [Company].read(provider, key: companiesKey)
+                companiesKey.set([tesla,spacex]).then { (companies: [Company]?) -> Promise<[Company]?> in
+                    return companiesKey.get()
                 }.then { _companies -> Void in
                     let _companyNames: [String]? = _companies?.map({ $0.name })
                     expect([tesla.name, spacex.name]).to(equal(_companyNames))
@@ -49,13 +47,11 @@ class Tests: QuickSpec {
                 let body: String
             }
 
-            let provider = URLSession.shared
-
             it("read") {
                 let url = URL(string: "http://jsonplaceholder.typicode.com/posts")!
                 var ids = [Int]()
 
-                [Post].read(provider, key: url).then { posts -> Void in
+                url.get().then { (posts: [Post]?) -> Void in
                     guard let posts = posts else {
                         return
                     }
@@ -69,7 +65,7 @@ class Tests: QuickSpec {
                 var ids = [Int]()
                 let post = Post(id: 124, title: "title", body: "body")
 
-                post.create(provider, key: url).then { (post: Post?) -> Void in
+                url.set(post).then { (post: Post?) -> Void in
                     ids.append(post!.id)
                 }
                 expect(ids).toEventually(contain([post.id]), timeout: 5)
