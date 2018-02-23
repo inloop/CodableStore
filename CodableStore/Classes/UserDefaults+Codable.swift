@@ -8,11 +8,31 @@
 import Foundation
 import PromiseKit
 
+public struct UserDefaultsCodableStoreRequest: CodableStoreProviderRequest {
+
+    enum Method {
+        case get
+        case set(Encodable)
+    }
+
+    let method: Method
+    let key: String
+}
+
 extension UserDefaults: CodableStoreProvider {
 
-    public typealias KeyType = String
+    public typealias RequestType = UserDefaultsCodableStoreRequest
 
-    public func get<T>(_ key: String) -> Promise<T?> where T : Decodable {
+    public func send<T>(_ request: UserDefaults.RequestType) -> Promise<T?> where T : Decodable {
+        switch request.method {
+        case .get:
+            return get(request.key)
+        case .set(let item):
+            return set(item, for: request.key)
+        }
+    }
+
+    private func get<T: Decodable>(_ key: String) -> Promise<T?> {
         guard let data = data(forKey: key) else {
             return Promise(value: nil)
         }
@@ -23,7 +43,7 @@ extension UserDefaults: CodableStoreProvider {
         }
     }
 
-    public func set<T, U>(_ item: T, for key: String) -> Promise<U?> where T : Encodable, U : Decodable {
+    private func set<T: Decodable>(_ item: Encodable, for key: String) -> Promise<T?> {
         do {
             let data = try item.serialize() as Data
             set(data, forKey: key)

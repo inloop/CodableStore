@@ -17,11 +17,13 @@ public protocol CodableStoreSource {
 
 extension String: CodableStoreSource {
     public func get<T>() -> Promise<T?> where T : Decodable {
-        return UserDefaults.standard.get(self)
+        let request = UserDefaultsCodableStoreRequest(method: .get, key: self)
+        return UserDefaults.standard.send(request)
     }
 
-    public func set<T, U>(_ item: T) -> Promise<U?> where T : Encodable, U : Decodable {
-        return UserDefaults.standard.set(item, for: self)
+    public func set<T: Encodable, U: Decodable>(_ item: T) -> Promise<U?> {
+        let request = UserDefaultsCodableStoreRequest(method: .set(item), key: self)
+        return UserDefaults.standard.send(request)
     }
 }
 
@@ -31,10 +33,16 @@ extension URL: CodableStoreSource {
     }
 
     public func get<T>() -> Promise<T?> where T : Decodable {
-        return URLSession.shared.get(self)
+        let request = URLRequest(url: self)
+        return URLSession.shared.send(request)
     }
 
     public func set<T, U>(_ item: T) -> Promise<U?> where T : Encodable, U : Decodable {
-        return URLSession.shared.set(item, for: self)
+        do {
+            let request = try item.getURLRequest(url: self, method: "POST")
+            return URLSession.shared.send(request)
+        } catch {
+            return Promise(error: error)
+        }
     }
 }

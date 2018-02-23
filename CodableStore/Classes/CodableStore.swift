@@ -8,12 +8,16 @@
 import Foundation
 import PromiseKit
 
+public protocol CodableStoreProviderRequest { }
+
 public protocol CodableStoreProvider {
 
-    associatedtype KeyType
+    associatedtype RequestType: CodableStoreProviderRequest
 
-    func get<T: Decodable>(_ key: KeyType) -> Promise<T?>
-    func set<T: Encodable, U: Decodable>(_ item: T, for key: KeyType) -> Promise<U?>
+    func send<T: Decodable>(_ request: RequestType) -> Promise<T?>
+
+//    func get<T: Decodable>(_ key: KeyType) -> Promise<T?>
+//    func set<T: Encodable, U: Decodable>(_ item: T, for key: KeyType) -> Promise<U?>
 }
 
 public protocol CodableStoreEnvironment {

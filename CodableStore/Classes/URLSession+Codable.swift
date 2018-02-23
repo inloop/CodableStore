@@ -7,6 +7,9 @@
 import Foundation
 import PromiseKit
 
+extension URLRequest: CodableStoreProviderRequest {
+}
+
 enum URLSessionCodableError: Error {
     case unexpectedStatusCode(statusCode: Int)
 }
@@ -18,26 +21,33 @@ struct URLSessionCodableResponse<T> {
 
 extension URLSession: CodableStoreProvider {
 
-    public typealias KeyType = URL
+    public typealias RequestType = URLRequest
 
-    public func get<T>(_ key: URL) -> Promise<T?> where T : Decodable {
-        return send(URLRequest(url: key)).then { res in
-            return res.data
-        }
+    public func send<T>(_ request: URLSession.RequestType) -> Promise<T?> where T : Decodable {
+        return _send(request).then { $0.data }
     }
-    public func set<T, U>(_ item: T, for key: URL) -> Promise<U?> where T : Encodable, U : Decodable {
-        var request: URLRequest
-        do {
-            request = try item.getURLRequest(url: key, method: "POST")
-        } catch {
-            return Promise(error: error)
-        }
-        return send(request).then { res in
-            return res.data
-        }
-    }
+//    public func send<T>(_ request: CodableStoreProviderRequest) -> Promise<T?> where T : Decodable {
+//
+//    }
 
-    private func send<T: Decodable>(_ request: URLRequest) -> Promise<URLSessionCodableResponse<T>> {
+//    public func get<T>(_ key: URL) -> Promise<T?> where T : Decodable {
+//        return send(URLRequest(url: key)).then { res in
+//            return res.data
+//        }
+//    }
+//    public func set<T, U>(_ item: T, for key: URL) -> Promise<U?> where T : Encodable, U : Decodable {
+//        var request: URLRequest
+//        do {
+//            request = try item.getURLRequest(url: key, method: "POST")
+//        } catch {
+//            return Promise(error: error)
+//        }
+//        return send(request).then { res in
+//            return res.data
+//        }
+//    }
+
+    private func _send<T: Decodable>(_ request: URLSession.RequestType) -> Promise<URLSessionCodableResponse<T>> {
         return Promise<URLSessionCodableResponse<T>> { (resolve, reject) in
             self.dataTask(with: request, completionHandler: adapter(resolve, reject)).resume()
         }
