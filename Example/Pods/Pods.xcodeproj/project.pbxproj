@@ -167,6 +167,7 @@
 		EAE2AAE5EB826B38978692984BB22FDD /* RaisesException.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E111D0D6190F7BC3EF68346A885C82 /* RaisesException.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		EB3A73071ABA60E77E0704649637D8BD /* SatisfyAnyOf.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6536D8AC815D9367A8E6B514A91B8E8 /* SatisfyAnyOf.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		ED1EF542ED4EEDC0E64690E90936CADE /* URLSession+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D088E9571266DD32910AEC38F6B9C7A /* URLSession+Codable.swift */; };
+		EEC0542120416C6000AFC767 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC0542020416C6000AFC767 /* Environment.swift */; };
 		EED96A95204042D6007FD093 /* Source.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED96A94204042D6007FD093 /* Source.swift */; };
 		EF8548E0C37E8888D9DDC11ED89D3568 /* Predicate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93197CC88C21EEB42E8A6A509710CA9 /* Predicate.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		F07AE2E7161E73F9A38E6EBD8C71A960 /* QuickSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 367E356A71E8B3C35907736F1614B5A2 /* QuickSpec.m */; };
@@ -429,6 +430,7 @@
 		EA885E47B4DD7098DCED13FAEDE124DC /* CALayer+AnyPromise.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CALayer+AnyPromise.m"; path = "Extensions/QuartzCore/Sources/CALayer+AnyPromise.m"; sourceTree = "<group>"; };
 		EC057714ACF9BA0FC3A6E727CE1B70B3 /* MatchError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MatchError.swift; path = Sources/Nimble/Matchers/MatchError.swift; sourceTree = "<group>"; };
 		EC20A7C4F7937A24ECFFDCC12826ABC9 /* QuickConfiguration.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QuickConfiguration.h; path = Sources/QuickObjectiveC/Configuration/QuickConfiguration.h; sourceTree = "<group>"; };
+		EEC0542020416C6000AFC767 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Environment.swift; path = CodableStore/Classes/Environment.swift; sourceTree = "<group>"; };
 		EED96A94204042D6007FD093 /* Source.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Source.swift; path = CodableStore/Classes/Source.swift; sourceTree = "<group>"; };
 		EF634DE84F013D2AE7EC2159506447AB /* CwlCatchException.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CwlCatchException.swift; path = Carthage/Checkouts/CwlCatchException/Sources/CwlCatchException/CwlCatchException.swift; sourceTree = "<group>"; };
 		EF9F733DF1A9FE7280494DB64D0CB4CD /* AnyPromise.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AnyPromise.swift; path = Sources/AnyPromise.swift; sourceTree = "<group>"; };
@@ -610,6 +612,7 @@
 		2F07334E256A06B0B72F8AF825AFF0F3 /* CodableStore */ = {
 			isa = PBXGroup;
 			children = (
+				EEC0542020416C6000AFC767 /* Environment.swift */,
 				2073D002552069F3ACE9B5339A93F9FC /* CodableStore.swift */,
 				EED96A94204042D6007FD093 /* Source.swift */,
 				98F8913C2322C1AF4018BF0F2E4A94AF /* Serialization.swift */,
@@ -1124,6 +1127,7 @@
 				E0FE89474DC29498E0D00E25D72EE67E /* CodableStore-dummy.m in Sources */,
 				EED96A95204042D6007FD093 /* Source.swift in Sources */,
 				1A5095F391D0F7F79D30977EA5439E89 /* CodableStore.swift in Sources */,
+				EEC0542120416C6000AFC767 /* Environment.swift in Sources */,
 				DE27C68A6F8027D1A002E45C73CB7539 /* Serialization.swift in Sources */,
 				ED1EF542ED4EEDC0E64690E90936CADE /* URLSession+Codable.swift in Sources */,
 				17CB716211210D64C77C44EFBFD781EC /* UserDefaults+Codable.swift in Sources */,
