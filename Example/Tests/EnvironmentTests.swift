@@ -12,16 +12,19 @@ class EnvironmentTests: QuickSpec {
         let name: String
         let username: String
     }
+    struct CreateUserRequest: Codable {
+        let id: Int
+        let name: String
+        let username: String
+    }
 
     // Environment
     enum TestEnvironment: CodableStoreHTTPEnvironment {
         
         static var sourceBase = URL(string: "http://jsonplaceholder.typicode.com")!
 
-        static let usersList = GET<[User]>("/users")
-//        static let usersList = GET<[User]>("/users")
-//        static let createUser = POST<User,User>("/users")
-//        static let userDetail = GET<User>("/users/:id")
+        static let listUsers: Endpoint<[User]> = GET("/users")
+        static let createUser: EndpointWithPayload<CreateUserRequest,User> = POST("/users")
     }
 
     override func spec() {
@@ -32,7 +35,7 @@ class EnvironmentTests: QuickSpec {
             it("read") {
                 var ids = [Int]()
 
-                store.send(TestEnvironment.usersList).then { users -> Void in
+                store.send(TestEnvironment.listUsers).then { users -> Void in
                     guard let users = users else {
                         return
                     }
@@ -43,12 +46,14 @@ class EnvironmentTests: QuickSpec {
 
             it("write") {
                 var ids = [Int]()
-                let user = User(id: 123, name: "John Doe", username: "john.doe")
+                let user = CreateUserRequest(id:123, name: "John Doe", username: "john.doe")
 
-//                store.send(user, in: TestEnvironment.createUser).then { user -> Void in
-//                    ids.append(user!.id)
-//                }
-//                expect(ids).toEventually(contain([user.id]), timeout: 5)
+                let endpoint = TestEnvironment.createUser.body(body: user)
+
+                store.send(endpoint).then { user -> Void in
+                    ids.append(user!.id)
+                }
+                expect(ids).toEventually(contain([user.id]), timeout: 5)
             }
         }
     }
