@@ -80,7 +80,7 @@ extension CodableStoreHTTPEnvironment {
         return CodableStoreEnvironmentHTTPEndpoint(.delete, path)
     }
 
-    static func request<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> ProviderRequestType {
+    public static func request<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> ProviderRequestType {
         let source = sourceBase.appending(endpoint.path)
         let request = URLRequest(url: source)
 
