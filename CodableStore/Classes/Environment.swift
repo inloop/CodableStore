@@ -45,7 +45,7 @@ extension CodableStoreUserDefaultsEnvironment {
 }
 
 extension CodableStore {
-    func send<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> Promise<T?> {
+    public func send<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> Promise<T?> {
         let request = environment.request(endpoint)
         return send(request)
     }

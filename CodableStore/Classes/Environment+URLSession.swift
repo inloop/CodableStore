@@ -24,7 +24,7 @@ public class CodableStoreEnvironmentHTTPEndpoint<T: Decodable>: CodableStoreEnvi
     //        return self
     //    }
 
-    init(_ method: CodableStoreEnvironmentHTTPMethod, _ path: String) {
+    public init(_ method: CodableStoreEnvironmentHTTPMethod, _ path: String) {
         self.method = method
         super.init(path)
     }
@@ -38,7 +38,7 @@ public class CodableStoreEnvironmentHTTPEndpoint<T: Decodable>: CodableStoreEnvi
 
 public class CodableStoreEnvironmentHTTPPayloadEndpoint<U: Encodable, T: Decodable>: CodableStoreEnvironmentHTTPEndpoint<T> {
     public var body: U? = nil
-    func body(body: U) -> Self {
+    public func body(body: U) -> Self {
         self.body = body
         return self
     }

@@ -22,11 +22,11 @@ public class CodableStore<E: CodableStoreEnvironment> {
     typealias EnvironmentType = E
     let environment: E.Type
 
-    init(_ environment: E.Type) {
+    public init(_ environment: E.Type) {
         self.environment = environment
     }
     
-    func send<T: Decodable>(_ request: E.ProviderRequestType) -> Promise<T?> {
+    public func send<T: Decodable>(_ request: E.ProviderRequestType) -> Promise<T?> {
         return self.environment.sourceBase.send(request)
     }
 }
