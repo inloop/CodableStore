@@ -18,11 +18,18 @@ public enum CodableStoreEnvironmentHTTPMethod: String {
 public class CodableStoreEnvironmentHTTPEndpoint<T: Decodable>: CodableStoreEnvironmentEndpoint<T> {
 
     var method: CodableStoreEnvironmentHTTPMethod
-    //    public var query: U? = nil
-    //    func query(query: U) -> Self {
-    //        self.query = query
-    //        return self
-    //    }
+    public var query: [String: String]? = nil
+    @discardableResult public func query(_ query: [String: String]) -> Self {
+        self.query = query
+        return self
+    }
+
+    @discardableResult public func setQueryValue(_ value: String, forKey key: String) -> Self {
+        var _query = query ?? [:]
+        _query[key] = value
+        self.query = _query
+        return self
+    }
 
     public init(_ method: CodableStoreEnvironmentHTTPMethod, _ path: String) {
         self.method = method
@@ -30,7 +37,18 @@ public class CodableStoreEnvironmentHTTPEndpoint<T: Decodable>: CodableStoreEnvi
     }
 
     func getRequest(url: URL) -> URLRequest {
-        var request = URLRequest(url: url)
+
+        var components = URLComponents(url: url.appending(path), resolvingAgainstBaseURL: true)!
+
+        if let query = query {
+            var queryItems = [URLQueryItem]()
+            for (key,value) in query {
+                queryItems.append(URLQueryItem(name: key, value: value))
+            }
+            components.queryItems = queryItems
+        }
+
+        var request = URLRequest(url: components.url!)
         request.httpMethod = self.method.rawValue
         return request
     }
@@ -38,7 +56,7 @@ public class CodableStoreEnvironmentHTTPEndpoint<T: Decodable>: CodableStoreEnvi
 
 public class CodableStoreEnvironmentHTTPPayloadEndpoint<U: Encodable, T: Decodable>: CodableStoreEnvironmentHTTPEndpoint<T> {
     public var body: U? = nil
-    public func body(body: U) -> Self {
+    @discardableResult public func body(body: U) -> Self {
         self.body = body
         return self
     }
@@ -85,7 +103,7 @@ extension CodableStoreHTTPEnvironment {
         let request = URLRequest(url: source)
 
         if let endpoint = endpoint as? CodableStoreEnvironmentHTTPEndpoint<T> {
-            return endpoint.getRequest(url: source)
+            return endpoint.getRequest(url: sourceBase)
         }
         return request
     }

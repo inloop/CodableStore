@@ -55,6 +55,15 @@ class EnvironmentTests: QuickSpec {
                 }
                 expect(ids).toEventually(contain([user.id]), timeout: 5)
             }
+
+            it("request generator") {
+                let endpoint = TestEnvironment.listUsers.query(["foo":"blah"])
+                endpoint.setQueryValue("bb", forKey: "aa")
+
+                let request = endpoint.getRequest(url: URL(string: "http://example.com")!)
+
+                expect(request.url?.absoluteString).to(equal("http://example.com/users?aa=bb&foo=blah"))
+            }
         }
     }
 }
