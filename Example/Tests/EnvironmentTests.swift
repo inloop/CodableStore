@@ -20,7 +20,7 @@ class EnvironmentTests: QuickSpec {
 
     // Environment
     enum TestEnvironment: CodableStoreHTTPEnvironment {
-        
+
         static var sourceBase = URL(string: "http://jsonplaceholder.typicode.com")!
 
         static let listUsers: Endpoint<[User]> = GET("/users")
@@ -28,10 +28,25 @@ class EnvironmentTests: QuickSpec {
         static let userDetail: EndpointWithPayload<CreateUserRequest,User> = POST("/users/:id")
     }
 
+    // Github Environment
+
+    struct GithubError: Decodable {
+        let message: String
+        let documentation_url: String
+    }
+
+    enum GithubEnvironment: CodableStoreHTTPEnvironment {
+
+        static var sourceBase = URL(string: "https://api.github.com/")!
+
+        static let blah: Endpoint<User> = GET("/blah")
+    }
+
     override func spec() {
         describe("environment") {
 
             let store = CodableStore(TestEnvironment.self)
+            let githubStore = CodableStore(GithubEnvironment.self)
 
             it("read") {
                 var ids = [Int]()
@@ -74,6 +89,26 @@ class EnvironmentTests: QuickSpec {
                 let request = endpoint.getRequest(url: URL(string: "http://example.com")!)
 
                 expect(request.url?.absoluteString).to(equal("http://example.com/users?aa=bb&foo=blah"))
+            }
+
+            it("error parsing") {
+                var errorMessage: String? = nil
+                let endpoint = GithubEnvironment.blah
+
+                githubStore.send(endpoint).catch { error in
+                    guard let error = error as? URLSessionCodableError else {
+                        return
+                    }
+                    switch error {
+                    case .unexpectedStatusCode(let response):
+                        let errorData: GithubError? = response.decodeData()
+                        errorMessage = errorData?.message
+                        break;
+                    case .unexpectedError(_):
+                        break;
+                    }
+                }
+                expect(errorMessage).toEventually(equal("Not Found"), timeout: 5)
             }
         }
     }

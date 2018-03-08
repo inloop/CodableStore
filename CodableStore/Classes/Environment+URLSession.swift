@@ -72,8 +72,7 @@ public class CodableStoreEnvironmentHTTPPayloadEndpoint<U: Encodable, T: Decodab
 }
 
 
-public protocol CodableStoreHTTPEnvironment: CodableStoreEnvironment {
-    typealias SourceType = URL
+public protocol CodableStoreHTTPEnvironment: CodableStoreEnvironment where SourceType == URL {
 
     typealias Endpoint = CodableStoreEnvironmentHTTPEndpoint
     typealias EndpointWithPayload = CodableStoreEnvironmentHTTPPayloadEndpoint

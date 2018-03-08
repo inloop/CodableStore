@@ -11,12 +11,22 @@ extension URLRequest: CodableStoreProviderRequest {}
 
 public enum URLSessionCodableError: Error {
     case unexpectedError(error: Error)
-    case unexpectedStatusCode(statusCode: Int)
+    case unexpectedStatusCode(response: UnexpectedStatusCodeResponse)
 }
 
 public struct URLSessionCodableResponse<T> {
     let data: T
     let response: URLResponse?
+}
+
+public struct UnexpectedStatusCodeResponse {
+    let statusCode: Int
+    let response: HTTPURLResponse
+    let data: Data
+
+    public func decodeData<T: Decodable>() -> T? {
+        return try? data.deserialize()
+    }
 }
 
 extension URLSession: CodableStoreProvider {
@@ -59,7 +69,8 @@ private func adapter<T: Decodable>(_ resolve: @escaping (URLSessionCodableRespon
         }
 
         if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode >= 400 {
-            return reject(URLSessionCodableError.unexpectedStatusCode(statusCode: httpResponse.statusCode))
+            let errorResponse = UnexpectedStatusCodeResponse(statusCode: httpResponse.statusCode, response: httpResponse, data: data)
+            return reject(URLSessionCodableError.unexpectedStatusCode(response: errorResponse))
         }
 
         do {
