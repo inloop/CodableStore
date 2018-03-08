@@ -25,6 +25,7 @@ class EnvironmentTests: QuickSpec {
 
         static let listUsers: Endpoint<[User]> = GET("/users")
         static let createUser: EndpointWithPayload<CreateUserRequest,User> = POST("/users")
+        static let userDetail: EndpointWithPayload<CreateUserRequest,User> = POST("/users/:id")
     }
 
     override func spec() {
@@ -56,7 +57,17 @@ class EnvironmentTests: QuickSpec {
                 expect(ids).toEventually(contain([user.id]), timeout: 5)
             }
 
-            it("request generator") {
+            it("request params") {
+                let endpoint = TestEnvironment.userDetail.setParamValue("123", forKey: "id")
+
+                let path = endpoint.path
+                let request = endpoint.getRequest(url: URL(string: "http://example.com")!)
+
+                expect(path).to(equal("/users/123"))
+                expect(request.url?.absoluteString).to(equal("http://example.com/users/123"))
+            }
+
+            it("request query") {
                 let endpoint = TestEnvironment.listUsers.query(["foo":"blah"])
                 endpoint.setQueryValue("bb", forKey: "aa")
 
