@@ -14,19 +14,19 @@ public enum URLSessionCodableError: Error {
     case unexpectedStatusCode(response: UnexpectedStatusCodeResponse)
 }
 
-public struct URLSessionCodableResponse<T> {
-    let data: T
-    let response: URLResponse?
-}
-
 public struct UnexpectedStatusCodeResponse {
-    let statusCode: Int
-    let response: HTTPURLResponse
-    let data: Data
+    public let statusCode: Int
+    public let response: HTTPURLResponse
+    public let data: Data
 
     public func decodeData<T: Decodable>() -> T? {
         return try? data.deserialize()
     }
+}
+
+private struct URLSessionCodableResponse<T> {
+    let data: T
+    let response: URLResponse?
 }
 
 extension URLSession: CodableStoreProvider {
