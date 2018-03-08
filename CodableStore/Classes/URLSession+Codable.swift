@@ -10,10 +10,11 @@ import PromiseKit
 extension URLRequest: CodableStoreProviderRequest {}
 
 public enum URLSessionCodableError: Error {
+    case unexpectedError(error: Error)
     case unexpectedStatusCode(statusCode: Int)
 }
 
-struct URLSessionCodableResponse<T> {
+public struct URLSessionCodableResponse<T> {
     let data: T
     let response: URLResponse?
 }
@@ -46,10 +47,10 @@ extension Encodable {
     }
 }
 
-private func adapter<T: Decodable>(_ resolve: @escaping (URLSessionCodableResponse<T>) -> Void, _ reject: @escaping (Error) -> Void) -> (Data?, URLResponse?, Error?) -> Void {
+private func adapter<T: Decodable>(_ resolve: @escaping (URLSessionCodableResponse<T>) -> Void, _ reject: @escaping (URLSessionCodableError) -> Void) -> (Data?, URLResponse?, Error?) -> Void {
     return { data, response, error in
         if let error = error {
-            return reject(error)
+            return reject(URLSessionCodableError.unexpectedError(error: error))
         }
 
         guard let data = data else {
@@ -62,16 +63,18 @@ private func adapter<T: Decodable>(_ resolve: @escaping (URLSessionCodableRespon
         }
 
         do {
+            var _response: URLSessionCodableResponse<T>
             if let data = data as? T {
-                resolve(URLSessionCodableResponse(data: data, response: response))
+                _response = URLSessionCodableResponse(data: data, response: response)
             } else {
                 let decoder = JSONDecoder()
                 decoder.dateDecodingStrategy = .iso8601
                 let decoded = try decoder.decode(T.self, from: data)
-                resolve(URLSessionCodableResponse(data: decoded, response: response))
+                _response = URLSessionCodableResponse(data: decoded, response: response)
             }
+            resolve(_response)
         } catch {
-            reject(error)
+            reject(URLSessionCodableError.unexpectedError(error: error))
         }
     }
 }
