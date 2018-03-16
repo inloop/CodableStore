@@ -8,7 +8,9 @@
 import Foundation
 import PromiseKit
 
-public protocol CodableStoreProviderRequest { }
+public protocol CodableStoreProviderRequest {
+    var debugDescription: String { get }
+}
 
 public protocol CodableStoreProvider {
 
@@ -22,12 +24,27 @@ public class CodableStore<E: CodableStoreEnvironment> {
     typealias EnvironmentType = E
     let environment: E.Type
 
+    public var loggingFn: (_ items: Any...) -> Void
+
+//    public func print(_ items: Any..., separator: String = default, terminator: String = default)
+
     public init(_ environment: E.Type) {
         self.environment = environment
+        #if DEBUG
+            self.loggingFn = { (items: Any...) in
+                print(items)
+            }
+        #endif
     }
     
     public func send<T: Decodable>(_ request: E.ProviderRequestType) -> Promise<T?> {
+        loggingFn("[CodableStore:request]", request.debugDescription)
         return self.environment.sourceBase.send(request)
     }
 }
 
+extension CodableStoreProviderRequest {
+    public var debugDescription: String {
+        return "unkown request (var debugDescription: String not implemented)"
+    }
+}
