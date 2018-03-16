@@ -12,10 +12,13 @@ class EnvironmentTests: QuickSpec {
         let name: String
         let username: String
     }
-    struct CreateUserRequest: Codable {
+
+    struct CreateUserRequest: Codable, CustomDateEncodable {
         let id: Int
         let name: String
         let username: String
+
+        static var dateEncodingStrategy = JSONEncoder.DateEncodingStrategy.iso8601
     }
 
     // Environment
@@ -30,9 +33,11 @@ class EnvironmentTests: QuickSpec {
 
     // Github Environment
 
-    struct GithubError: Decodable {
+    struct GithubError: Decodable, CustomDateDecodable {
         let message: String
         let documentation_url: String
+
+        static var dateDecodingStrategy = JSONDecoder.DateDecodingStrategy.iso8601
     }
 
     enum GithubEnvironment: CodableStoreHTTPEnvironment {

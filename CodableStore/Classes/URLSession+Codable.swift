@@ -7,7 +7,25 @@
 import Foundation
 import PromiseKit
 
-extension URLRequest: CodableStoreProviderRequest {}
+extension URLRequest: CodableStoreProviderRequest {
+    public var debugDescription: String {
+        var curl = String(format: "curl -v -X %@", httpMethod ?? "UNKNOWN")
+
+        if let url = url {
+            curl.append(" '\(url.absoluteString)'")
+        }
+
+        allHTTPHeaderFields?.forEach({ (item) in
+            curl.append(" -H '\(item.key): \(item.value)'")
+        })
+
+        if let body = httpBody, let bodyString = String.init(data: body, encoding: .utf8) {
+            curl.append(" -d '\(bodyString)'")
+        }
+
+        return curl
+    }
+}
 
 public enum URLSessionCodableError: Error {
     case unexpectedError(error: Error)
