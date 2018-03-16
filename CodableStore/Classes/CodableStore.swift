@@ -11,12 +11,17 @@ import PromiseKit
 public protocol CodableStoreProviderRequest {
     var debugDescription: String { get }
 }
+public protocol CodableStoreProviderResponse {
+    var debugDescription: String { get }
+    func deserialize<T: Decodable>() throws -> T?
+}
 
 public protocol CodableStoreProvider {
 
     associatedtype RequestType: CodableStoreProviderRequest
+    associatedtype ResponseType: CodableStoreProviderResponse
     
-    func send<T: Decodable>(_ request: RequestType) -> Promise<T?>
+    func send(_ request: RequestType) -> Promise<ResponseType>
 }
 
 public typealias CodableStoreLoggingFn = (_ items: Any...) -> Void
@@ -25,6 +30,7 @@ public class CodableStore<E: CodableStoreEnvironment> {
 
     typealias EnvironmentType = E
     let environment: E.Type
+    private var adapters = [CodableStoreAdapter<E>]()
 
     public var loggingFn: CodableStoreLoggingFn? = nil
 
@@ -39,12 +45,26 @@ public class CodableStore<E: CodableStoreEnvironment> {
     
     public func send<T: Decodable>(_ request: E.ProviderRequestType) -> Promise<T?> {
         loggingFn?("[CodableStore:request]", request.debugDescription)
-        return self.environment.sourceBase.send(request)
+        let request = adapters.reduce(request, { $1.transform(request: $0) })
+        return self.environment.sourceBase.send(request).then { response in
+            return self.adapters.reduce(response, { $1.transform(response: $0) })
+        }.then { response -> T? in
+            return try response.deserialize()
+        }
+    }
+
+    public func addAdapter(_ adapter: CodableStoreAdapter<E>) {
+        adapters.append(adapter)
     }
 }
 
 extension CodableStoreProviderRequest {
     public var debugDescription: String {
         return "unkown request (var debugDescription: String not implemented)"
+    }
+}
+extension CodableStoreProviderResponse {
+    public var debugDescription: String {
+        return "unkown response (var debugDescription: String not implemented)"
     }
 }

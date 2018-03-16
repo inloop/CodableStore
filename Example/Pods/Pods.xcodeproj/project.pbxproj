@@ -167,6 +167,7 @@
 		EAE2AAE5EB826B38978692984BB22FDD /* RaisesException.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E111D0D6190F7BC3EF68346A885C82 /* RaisesException.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		EB3A73071ABA60E77E0704649637D8BD /* SatisfyAnyOf.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6536D8AC815D9367A8E6B514A91B8E8 /* SatisfyAnyOf.swift */; settings = {COMPILER_FLAGS = "-DPRODUCT_NAME=Nimble/Nimble"; }; };
 		ED1EF542ED4EEDC0E64690E90936CADE /* URLSession+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D088E9571266DD32910AEC38F6B9C7A /* URLSession+Codable.swift */; };
+		EEA545E92052655700B928BF /* Adapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEA545E82052655700B928BF /* Adapter.swift */; };
 		EEC0542120416C6000AFC767 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC0542020416C6000AFC767 /* Environment.swift */; };
 		EEC0542520450AA800AFC767 /* Environment+URLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC0542420450AA800AFC767 /* Environment+URLSession.swift */; };
 		EED96A95204042D6007FD093 /* Source.swift in Sources */ = {isa = PBXBuildFile; fileRef = EED96A94204042D6007FD093 /* Source.swift */; };
@@ -431,6 +432,7 @@
 		EA885E47B4DD7098DCED13FAEDE124DC /* CALayer+AnyPromise.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CALayer+AnyPromise.m"; path = "Extensions/QuartzCore/Sources/CALayer+AnyPromise.m"; sourceTree = "<group>"; };
 		EC057714ACF9BA0FC3A6E727CE1B70B3 /* MatchError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MatchError.swift; path = Sources/Nimble/Matchers/MatchError.swift; sourceTree = "<group>"; };
 		EC20A7C4F7937A24ECFFDCC12826ABC9 /* QuickConfiguration.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = QuickConfiguration.h; path = Sources/QuickObjectiveC/Configuration/QuickConfiguration.h; sourceTree = "<group>"; };
+		EEA545E82052655700B928BF /* Adapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Adapter.swift; path = CodableStore/Classes/Adapter.swift; sourceTree = "<group>"; };
 		EEC0542020416C6000AFC767 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Environment.swift; path = CodableStore/Classes/Environment.swift; sourceTree = "<group>"; };
 		EEC0542420450AA800AFC767 /* Environment+URLSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Environment+URLSession.swift"; path = "CodableStore/Classes/Environment+URLSession.swift"; sourceTree = "<group>"; };
 		EED96A94204042D6007FD093 /* Source.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Source.swift; path = CodableStore/Classes/Source.swift; sourceTree = "<group>"; };
@@ -622,6 +624,7 @@
 				4D088E9571266DD32910AEC38F6B9C7A /* URLSession+Codable.swift */,
 				4008CF672060D3A3303DC181EF33327D /* UserDefaults+Codable.swift */,
 				7DB520EC06ED4D89AEFA5970684C1930 /* Support Files */,
+				EEA545E82052655700B928BF /* Adapter.swift */,
 			);
 			name = CodableStore;
 			path = ../..;
@@ -1128,6 +1131,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E0FE89474DC29498E0D00E25D72EE67E /* CodableStore-dummy.m in Sources */,
+				EEA545E92052655700B928BF /* Adapter.swift in Sources */,
 				EEC0542520450AA800AFC767 /* Environment+URLSession.swift in Sources */,
 				EED96A95204042D6007FD093 /* Source.swift in Sources */,
 				1A5095F391D0F7F79D30977EA5439E89 /* CodableStore.swift in Sources */,

@@ -19,37 +19,40 @@ public struct UserDefaultsCodableStoreRequest: CodableStoreProviderRequest {
     let key: String
 }
 
+public struct UserDefaultsCodableStoreResult: CodableStoreProviderResponse {
+    let data: Data?
+
+    public func deserialize<T>() throws -> T? where T : Decodable {
+        return try data?.deserialize()
+    }
+}
+
 extension UserDefaults: CodableStoreProvider {
 
     public typealias RequestType = UserDefaultsCodableStoreRequest
+    public typealias ResponseType = UserDefaultsCodableStoreResult
 
-    public func send<T>(_ request: UserDefaults.RequestType) -> Promise<T?> where T : Decodable {
+    public func send(_ request: UserDefaultsCodableStoreRequest) -> Promise<UserDefaults.ResponseType> {
         switch request.method {
         case .get:
-            return get(request.key)
+            return Promise(value: UserDefaults.ResponseType(data: get(request.key)))
         case .set(let item):
-            return set(item, for: request.key)
+            do {
+                let value = try set(item, for: request.key)
+                return Promise(value: UserDefaults.ResponseType(data: value))
+            } catch {
+                return Promise(error: error)
+            }
         }
     }
 
-    private func get<T: Decodable>(_ key: String) -> Promise<T?> {
-        guard let data = data(forKey: key) else {
-            return Promise(value: nil)
+        private func get(_ key: String) -> Data? {
+            return data(forKey: key)
         }
-        do {
-            return Promise(value: try data.deserialize())
-        } catch {
-            return Promise(error: error)
-        }
-    }
 
-    private func set<T: Decodable>(_ item: Encodable, for key: String) -> Promise<T?> {
-        do {
+        private func set(_ item: Encodable, for key: String) throws -> Data? {
             let data = try item.serialize() as Data
-            set(data, forKey: key)
-        } catch {
-            return Promise(error: error)
+            		set(data, forKey: key)
+            return get(key)
         }
-        return get(key)
-    }
 }

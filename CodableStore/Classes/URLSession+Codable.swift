@@ -42,22 +42,27 @@ public struct UnexpectedStatusCodeResponse {
     }
 }
 
-private struct URLSessionCodableResponse<T> {
-    let data: T
+public struct URLSessionCodableResponse: CodableStoreProviderResponse {
+    let data: Data?
     let response: URLResponse?
+
+    public func deserialize<T>() throws -> T? where T : Decodable {
+        return try data?.deserialize()
+    }
 }
 
 extension URLSession: CodableStoreProvider {
 
     public typealias RequestType = URLRequest
+    public typealias ResponseType = URLSessionCodableResponse
 
-    public func send<T>(_ request: URLSession.RequestType) -> Promise<T?> where T : Decodable {
-        return _send(request).then { $0.data }
+    public func send(_ request: URLRequest) -> Promise<URLSession.ResponseType> {
+        return _send(request)
     }
 
-    private func _send<T: Decodable>(_ request: URLSession.RequestType) -> Promise<URLSessionCodableResponse<T>> {
-        return Promise<URLSessionCodableResponse<T>> { (resolve, reject) in
-            self.dataTask(with: request, completionHandler: adapter(resolve, reject)).resume()
+    private func _send(_ request: URLSession.RequestType) -> Promise<URLSessionCodableResponse> {
+        return Promise<URLSessionCodableResponse> { (resolve, reject) in
+            self.dataTask(with: request, completionHandler: HTTPResponsePromiseHandler(resolve, reject)).resume()
         }
     }
 }
@@ -75,7 +80,7 @@ extension Encodable {
     }
 }
 
-private func adapter<T: Decodable>(_ resolve: @escaping (URLSessionCodableResponse<T>) -> Void, _ reject: @escaping (URLSessionCodableError) -> Void) -> (Data?, URLResponse?, Error?) -> Void {
+private func HTTPResponsePromiseHandler(_ resolve: @escaping (URLSessionCodableResponse) -> Void, _ reject: @escaping (URLSessionCodableError) -> Void) -> (Data?, URLResponse?, Error?) -> Void {
     return { data, response, error in
         if let error = error {
             return reject(URLSessionCodableError.unexpectedError(error: error))
@@ -91,21 +96,6 @@ private func adapter<T: Decodable>(_ resolve: @escaping (URLSessionCodableRespon
             return reject(URLSessionCodableError.unexpectedStatusCode(response: errorResponse))
         }
 
-        do {
-            var _response: URLSessionCodableResponse<T>
-            if let data = data as? T {
-                _response = URLSessionCodableResponse(data: data, response: response)
-            } else {
-                let decoder = JSONDecoder()
-                decoder.dateDecodingStrategy = .iso8601
-                let decoded = try decoder.decode(T.self, from: data)
-                _response = URLSessionCodableResponse(data: decoded, response: response)
-            }
-            resolve(_response)
-        } catch {
-            reject(URLSessionCodableError.unexpectedError(error: error))
-        }
+        resolve(URLSessionCodableResponse(data: data, response: response))
     }
 }
-
-
