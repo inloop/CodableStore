@@ -19,14 +19,14 @@ public protocol CodableStoreProvider {
     func send<T: Decodable>(_ request: RequestType) -> Promise<T?>
 }
 
+public typealias CodableStoreLoggingFn = (_ items: Any...) -> Void
+
 public class CodableStore<E: CodableStoreEnvironment> {
 
     typealias EnvironmentType = E
     let environment: E.Type
 
-    public var loggingFn: (_ items: Any...) -> Void
-
-//    public func print(_ items: Any..., separator: String = default, terminator: String = default)
+    public var loggingFn: CodableStoreLoggingFn? = nil
 
     public init(_ environment: E.Type) {
         self.environment = environment
@@ -38,7 +38,7 @@ public class CodableStore<E: CodableStoreEnvironment> {
     }
     
     public func send<T: Decodable>(_ request: E.ProviderRequestType) -> Promise<T?> {
-        loggingFn("[CodableStore:request]", request.debugDescription)
+        loggingFn?("[CodableStore:request]", request.debugDescription)
         return self.environment.sourceBase.send(request)
     }
 }
