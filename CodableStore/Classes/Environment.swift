@@ -62,28 +62,12 @@ public protocol CodableStoreEnvironment {
     static func request<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> ProviderRequestType
 }
 
-public protocol CodableStoreUserDefaultsEnvironment: CodableStoreEnvironment where SourceType == String {
-
-//    typealias Get<T> = CodableStoreEnvironmentEndpoint<T>
-//    typealias Set<IN: Encodable, OUT> = CodableStoreEnvironmentEndpoint<IN, OUT>
-}
-
-extension CodableStoreUserDefaultsEnvironment {
-    public static func request<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> ProviderRequestType {
-        let source = sourceBase.appending(endpoint.path)
-        return UserDefaultsCodableStoreRequest(method: .get, key: source)
-    }
-}
-
 extension CodableStore {
     public func send<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> Promise<T?> {
         let request = environment.request(endpoint)
         return send(request)
     }
 }
-
-
-
 
 
 

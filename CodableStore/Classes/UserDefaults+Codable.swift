@@ -46,13 +46,13 @@ extension UserDefaults: CodableStoreProvider {
         }
     }
 
-        private func get(_ key: String) -> Data? {
-            return data(forKey: key)
-        }
+    private func get(_ key: String) -> Data? {
+        return data(forKey: key)
+    }
 
-        private func set(_ item: Encodable, for key: String) throws -> Data? {
-            let data = try item.serialize() as Data
-            		set(data, forKey: key)
-            return get(key)
-        }
+    private func set(_ item: Encodable, for key: String) throws -> Data? {
+        let data = try item.serialize() as Data
+                set(data, forKey: key)
+        return get(key)
+    }
 }

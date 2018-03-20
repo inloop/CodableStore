@@ -86,21 +86,57 @@ class EnvironmentTests: QuickSpec {
             throw error
         }
     }
+    // UserDefaults Environment
+
+    enum UDTestEnvironment: CodableStoreUserDefaultsEnvironment {
+        static var sourceBase = "blah_key"
+
+        static let currentUser: Endpoint<User> = GET("/currentUser")
+        static let setCurrentUser: EndpointWithPayload<User, User> = SET("/currentUser")
+    }
+    class UserDefaultsAdapter: CodableStoreAdapter<UDTestEnvironment> {
+
+        var requestsHandled = 0
+        var responseHandled = 0
+        var errorsHandled = 0
+
+        func resetCounters() {
+            requestsHandled = 0
+            responseHandled = 0
+            errorsHandled = 0
+        }
+
+        override func transform(request: UserDefaultsCodableStoreRequest) -> UserDefaultsCodableStoreRequest {
+            requestsHandled += 1
+            return request
+        }
+        override func transform(response: UserDefaultsCodableStoreResult) -> UserDefaultsCodableStoreResult {
+            responseHandled += 1
+            return response
+        }
+        override func handle<T>(error: Error) throws -> T? where T : Decodable {
+            errorsHandled += 1
+            throw error
+        }
+    }
 
     override func spec() {
         describe("environment") {
 
             let adapter = TestAdapter()
             let githubAdapter = GithubAdapter()
+            let userDefaultsAdapter = UserDefaultsAdapter()
             let store = CodableStore(TestEnvironment.self)
             let githubStore = CodableStore(GithubEnvironment.self)
+            let userDefaultsStore = CodableStore(UDTestEnvironment.self)
 
             store.addAdapter(adapter)
             githubStore.addAdapter(githubAdapter)
+            userDefaultsStore.addAdapter(userDefaultsAdapter)
 
             it("read") {
                 var ids = [Int]()
-                
+
                 adapter.resetCounters()
 
                 store.send(TestEnvironment.listUsers).then { users -> Void in
@@ -130,6 +166,23 @@ class EnvironmentTests: QuickSpec {
                 expect(adapter.requestsHandled).to(equal(1))
                 expect(adapter.responseHandled).to(equal(1))
                 expect(adapter.errorsHandled).to(equal(0))
+            }
+
+            it("write userdefaults") {
+                var ids = [Int]()
+                let user = User(id: 123, name: "John Doe", username: "john.doe")
+
+                userDefaultsAdapter.resetCounters()
+
+                let endpoint = UDTestEnvironment.setCurrentUser.setPayload(user)
+
+                userDefaultsStore.send(endpoint).then { user -> Void in
+                    ids.append(user!.id)
+                }
+                expect(ids).toEventually(contain([user.id]), timeout: 5)
+                expect(userDefaultsAdapter.requestsHandled).to(equal(1))
+                expect(userDefaultsAdapter.responseHandled).to(equal(1))
+                expect(userDefaultsAdapter.errorsHandled).to(equal(0))
             }
 
             it("request params") {
@@ -173,6 +226,8 @@ class EnvironmentTests: QuickSpec {
                 expect(errorMessage).toEventually(equal("Not Found"), timeout: 5)
                 expect(githubAdapter.errorsHandled).to(equal(1))
             }
+
+
         }
     }
 }
