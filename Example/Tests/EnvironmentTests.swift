@@ -31,6 +31,33 @@ class EnvironmentTests: QuickSpec {
         static let userDetail: EndpointWithPayload<CreateUserRequest,User> = POST("/users/:id")
     }
 
+
+    class TestAdapter: CodableStoreAdapter<TestEnvironment> {
+
+        var requestsHandled = 0
+        var responseHandled = 0
+        var errorsHandled = 0
+
+        func resetCounters() {
+            requestsHandled = 0
+            responseHandled = 0
+            errorsHandled = 0
+        }
+
+        override func transform(request: URLRequest) -> URLRequest {
+            requestsHandled += 1
+            return request
+        }
+        override func transform(response: URLSessionCodableResponse) -> URLSessionCodableResponse {
+            responseHandled += 1
+            return response
+        }
+        override func handle(error: Error) throws {
+            errorsHandled += 1
+            throw error
+        }
+    }
+
     // Github Environment
 
     struct GithubError: Decodable, CustomDateDecodable {
@@ -50,11 +77,16 @@ class EnvironmentTests: QuickSpec {
     override func spec() {
         describe("environment") {
 
+            let adapter = TestAdapter()
             let store = CodableStore(TestEnvironment.self)
             let githubStore = CodableStore(GithubEnvironment.self)
 
+            store.addAdapter(adapter)
+
             it("read") {
                 var ids = [Int]()
+                
+                adapter.resetCounters()
 
                 store.send(TestEnvironment.listUsers).then { users -> Void in
                     guard let users = users else {
@@ -63,11 +95,16 @@ class EnvironmentTests: QuickSpec {
                     ids.append(contentsOf:  users.map { $0.id })
                 }
                 expect(ids).toEventually(contain([1,2,3]), timeout: 5)
+                expect(adapter.requestsHandled).to(equal(1))
+                expect(adapter.responseHandled).to(equal(1))
+                expect(adapter.errorsHandled).to(equal(0))
             }
 
             it("write") {
                 var ids = [Int]()
                 let user = CreateUserRequest(id:123, name: "John Doe", username: "john.doe")
+
+                adapter.resetCounters()
 
                 let endpoint = TestEnvironment.createUser.body(body: user)
 
@@ -75,6 +112,9 @@ class EnvironmentTests: QuickSpec {
                     ids.append(user!.id)
                 }
                 expect(ids).toEventually(contain([user.id]), timeout: 5)
+                expect(adapter.requestsHandled).to(equal(1))
+                expect(adapter.responseHandled).to(equal(1))
+                expect(adapter.errorsHandled).to(equal(0))
             }
 
             it("request params") {
