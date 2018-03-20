@@ -50,7 +50,13 @@ public class CodableStore<E: CodableStoreEnvironment> {
             return self.adapters.reduce(response, { $1.transform(response: $0) })
         }.then { response -> T? in
             return try response.deserialize()
-        }
+        }.recover(execute: { (error) -> T? in
+            // we want to iterate adapters and retrieve result from error handler
+            for adapter in self.adapters {
+                return try adapter.handle(error: error)
+            }
+            throw error
+        })
     }
 
     public func addAdapter(_ adapter: CodableStoreAdapter<E>) {

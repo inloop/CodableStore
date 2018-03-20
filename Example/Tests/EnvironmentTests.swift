@@ -31,7 +31,6 @@ class EnvironmentTests: QuickSpec {
         static let userDetail: EndpointWithPayload<CreateUserRequest,User> = POST("/users/:id")
     }
 
-
     class TestAdapter: CodableStoreAdapter<TestEnvironment> {
 
         var requestsHandled = 0
@@ -52,7 +51,7 @@ class EnvironmentTests: QuickSpec {
             responseHandled += 1
             return response
         }
-        override func handle(error: Error) throws {
+        override func handle<T>(error: Error) throws -> T? where T : Decodable {
             errorsHandled += 1
             throw error
         }
@@ -74,14 +73,30 @@ class EnvironmentTests: QuickSpec {
         static let blah: Endpoint<User> = GET("/blah")
     }
 
+    class GithubAdapter: CodableStoreAdapter<GithubEnvironment> {
+
+        var errorsHandled = 0
+
+        func resetCounters() {
+            errorsHandled = 0
+        }
+
+        override func handle<T>(error: Error) throws -> T? where T : Decodable {
+            errorsHandled += 1
+            throw error
+        }
+    }
+
     override func spec() {
         describe("environment") {
 
             let adapter = TestAdapter()
+            let githubAdapter = GithubAdapter()
             let store = CodableStore(TestEnvironment.self)
             let githubStore = CodableStore(GithubEnvironment.self)
 
             store.addAdapter(adapter)
+            githubStore.addAdapter(githubAdapter)
 
             it("read") {
                 var ids = [Int]()
@@ -140,6 +155,8 @@ class EnvironmentTests: QuickSpec {
                 var errorMessage: String? = nil
                 let endpoint = GithubEnvironment.blah
 
+                githubAdapter.resetCounters()
+
                 githubStore.send(endpoint).catch { error in
                     guard let error = error as? URLSessionCodableError else {
                         return
@@ -154,6 +171,7 @@ class EnvironmentTests: QuickSpec {
                     }
                 }
                 expect(errorMessage).toEventually(equal("Not Found"), timeout: 5)
+                expect(githubAdapter.errorsHandled).to(equal(1))
             }
         }
     }

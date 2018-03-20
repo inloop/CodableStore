@@ -17,6 +17,8 @@ public class CodableStoreAdapter<E: CodableStoreEnvironment> {
     func transform(response: Provider.ResponseType) -> Provider.ResponseType {
         return response
     }
-    func handle(error: Error) throws {}
+    func handle<T: Decodable>(error: Error) throws -> T? {
+        return nil
+    }
 }
 
