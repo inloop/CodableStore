@@ -69,7 +69,7 @@ public protocol CodableStoreUserDefaultsEnvironment: CodableStoreEnvironment whe
 }
 
 extension CodableStoreUserDefaultsEnvironment {
-    static func request<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> ProviderRequestType {
+    public static func request<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> ProviderRequestType {
         let source = sourceBase.appending(endpoint.path)
         return UserDefaultsCodableStoreRequest(method: .get, key: source)
     }
