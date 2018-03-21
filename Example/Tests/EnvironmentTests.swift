@@ -6,11 +6,33 @@ import CodableStore
 
 class EnvironmentTests: QuickSpec {
 
+    static let apiFormatter: DateFormatter = {
+        let apiFormatter = DateFormatter()
+        apiFormatter.calendar = Calendar(identifier: .iso8601)
+        apiFormatter.locale = Locale(identifier: "en_US_POSIX")
+        apiFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        apiFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return apiFormatter
+    }()
+
     // Model
-    struct User: Codable {
+    struct User: Codable, CustomDateDecodable, CustomDateEncodable {
         let id: Int
         let name: String
         let username: String
+        let birthdate: Date?
+
+        static var dateEncodingStrategy: JSONEncoder.DateEncodingStrategy = .formatted(apiFormatter)
+
+        public static var dateDecodingStrategy = JSONDecoder.DateDecodingStrategy.custom { (decoder) -> Date in
+            let container = try decoder.singleValueContainer()
+            let dateStr = try container.decode(String.self)
+            let formatter = apiFormatter
+            if let date = formatter.date(from: dateStr) {
+                return date
+            }
+            fatalError("Invalid date: \(dateStr)")
+        }
     }
 
     struct CreateUserRequest: Codable, CustomDateEncodable {
@@ -59,15 +81,6 @@ class EnvironmentTests: QuickSpec {
 
     // Github Environment
 
-    static let apiFormatter: DateFormatter = {
-        let apiFormatter = DateFormatter()
-        apiFormatter.calendar = Calendar(identifier: .iso8601)
-        apiFormatter.locale = Locale(identifier: "en_US_POSIX")
-        apiFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        apiFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        return apiFormatter
-    }()
-
     struct GithubError: Decodable, CustomDateDecodable {
         let message: String
         let documentation_url: String
@@ -95,8 +108,8 @@ class EnvironmentTests: QuickSpec {
             throw error
         }
     }
-    // UserDefaults Environment
 
+    // UserDefaults Environment
     enum UDTestEnvironment: CodableStoreUserDefaultsEnvironment {
         static var sourceBase = "blah_key"
 
@@ -179,7 +192,7 @@ class EnvironmentTests: QuickSpec {
 
             it("write userdefaults") {
                 var ids = [Int]()
-                let user = User(id: 123, name: "John Doe", username: "john.doe")
+                let user = User(id: 123, name: "John Doe", username: "john.doe", birthdate: Date(timeIntervalSince1970: 3600*24*30*12*35))
 
                 userDefaultsAdapter.resetCounters()
 

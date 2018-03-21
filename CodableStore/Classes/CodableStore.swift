@@ -13,7 +13,7 @@ public protocol CodableStoreProviderRequest {
 }
 public protocol CodableStoreProviderResponse {
     var debugDescription: String { get }
-    func deserialize<T: Decodable>() throws -> T?
+    func deserialize<T: Decodable>() throws -> T
 }
 
 public protocol CodableStoreProvider {
@@ -48,7 +48,8 @@ public class CodableStore<E: CodableStoreEnvironment> {
         let request = adapters.reduce(request, { $1.transform(request: $0) })
         return self.environment.sourceBase.send(request).then { response in
             return self.adapters.reduce(response, { $1.transform(response: $0) })
-        }.then { response -> T? in
+        }.then { response -> T in
+            print("send",T.self)
             return try response.deserialize()
         }.recover(execute: { (error) -> T? in
             // we want to iterate adapters and retrieve result from error handler

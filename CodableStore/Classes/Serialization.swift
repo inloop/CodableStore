@@ -47,7 +47,6 @@ extension Data: CodableStoreSerializer, CodableStoreDeserializer {
             return data
         } else {
             let decoder = JSONDecoder()
-            print(T.self, T.self as? CustomDateDecodable.Type)
             decoder.dateDecodingStrategy = (T.self as? CustomDateDecodable.Type)?.dateDecodingStrategy ?? .iso8601
             return try decoder.decode(T.self, from: self)
         }

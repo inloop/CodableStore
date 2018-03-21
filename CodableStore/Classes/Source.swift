@@ -31,7 +31,8 @@ extension String: CodableStoreSource {
     public func set<T: Encodable, U: Decodable>(_ item: T) -> Promise<U?> {
         let request = UserDefaultsCodableStoreRequest(method: .set(item), key: self)
         return UserDefaults.standard.send(request).then { response -> U? in
-            return try response.data?.deserialize()
+            let res: U =  try response.data!.deserialize()
+            return res
         }
     }
 

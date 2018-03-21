@@ -53,8 +53,11 @@ public struct URLSessionCodableResponse: CodableStoreProviderResponse {
         return "empty response"
     }
 
-    public func deserialize<T>() throws -> T? where T : Decodable {
-        return try data?.deserialize()
+    public func deserialize<T>() throws -> T where T : Decodable {
+        guard let data = data else {
+            fatalError("empty response data")
+        }
+        return try data.deserialize()
     }
 }
 
