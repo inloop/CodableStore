@@ -52,7 +52,7 @@ extension UserDefaults: CodableStoreProvider {
 
     private func set(_ item: Encodable, for key: String) throws -> Data? {
         let data = try item.serialize() as Data
-                set(data, forKey: key)
+        set(data, forKey: key)
         return get(key)
     }
 }
