@@ -2,7 +2,7 @@ import Quick
 import Nimble
 import PromiseKit
 
-@testable import CodableStore
+import CodableStore
 
 class Tests: QuickSpec {
 

@@ -46,6 +46,13 @@ public struct URLSessionCodableResponse: CodableStoreProviderResponse {
     let data: Data?
     let response: URLResponse?
 
+    public var debugDescription: String {
+        if let data = data, let res = String(data: data, encoding: .utf8) {
+            return res
+        }
+        return "empty response"
+    }
+
     public func deserialize<T>() throws -> T? where T : Decodable {
         return try data?.deserialize()
     }

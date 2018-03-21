@@ -36,7 +36,7 @@ public class CodableStoreEnvironmentHTTPEndpoint<T: Decodable>: CodableStoreEnvi
         super.init(path)
     }
 
-    func getRequest(url: URL) -> URLRequest {
+    public func getRequest(url: URL) -> URLRequest {
 
         var components = URLComponents(url: url.appending(path), resolvingAgainstBaseURL: true)!
 
@@ -61,7 +61,7 @@ public class CodableStoreEnvironmentHTTPPayloadEndpoint<U: Encodable, T: Decodab
         return self
     }
 
-    override func getRequest(url: URL) -> URLRequest {
+    override public func getRequest(url: URL) -> URLRequest {
         var request = super.getRequest(url: url)
         do {
             request.httpBody = try body?.serialize()
