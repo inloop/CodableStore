@@ -9,7 +9,11 @@ import Foundation
 
 public class CodableStoreEnvironmentUserDefaultsEndpoint<T: Decodable>: CodableStoreEnvironmentEndpoint<T> {
 
-    func getRequest() -> UserDefaultsCodableStoreRequest {
+    public override init(_ path: String) {
+        super.init(path)
+    }
+
+    public func getRequest() -> UserDefaultsCodableStoreRequest {
         return UserDefaultsCodableStoreRequest(method: .get, key: self.path)
     }
 }
@@ -17,12 +21,12 @@ public class CodableStoreEnvironmentUserDefaultsEndpoint<T: Decodable>: CodableS
 public class CodableStoreEnvironmentUserDefaultsPayloadEndpoint<U: Encodable, T: Decodable>: CodableStoreEnvironmentUserDefaultsEndpoint<T> {
     var payload: U!
 
-    func setPayload(_ payload: U) -> Self {
+    public func setPayload(_ payload: U) -> Self {
         self.payload = payload
         return self
     }
 
-    override func getRequest() -> UserDefaultsCodableStoreRequest {
+    override public func getRequest() -> UserDefaultsCodableStoreRequest {
         return UserDefaultsCodableStoreRequest(method: .set(payload), key: self.path)
     }
 }
@@ -34,8 +38,8 @@ public protocol CodableStoreUserDefaultsEnvironment: CodableStoreEnvironment whe
 }
 
 extension CodableStoreUserDefaultsEnvironment {
-    typealias GET<T: Decodable> = CodableStoreEnvironmentUserDefaultsEndpoint<T>
-    typealias SET<U: Encodable, T: Decodable> = CodableStoreEnvironmentUserDefaultsPayloadEndpoint<U,T>
+    public typealias GET<T: Decodable> = CodableStoreEnvironmentUserDefaultsEndpoint<T>
+    public typealias SET<U: Encodable, T: Decodable> = CodableStoreEnvironmentUserDefaultsPayloadEndpoint<U,T>
 
     public static func request<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> ProviderRequestType {
         let source = sourceBase.appending(endpoint.path)

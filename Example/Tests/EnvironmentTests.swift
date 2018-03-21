@@ -2,7 +2,7 @@ import Quick
 import Nimble
 import PromiseKit
 
-@testable import CodableStore
+import CodableStore
 
 class EnvironmentTests: QuickSpec {
 
@@ -59,11 +59,20 @@ class EnvironmentTests: QuickSpec {
 
     // Github Environment
 
+    static let apiFormatter: DateFormatter = {
+        let apiFormatter = DateFormatter()
+        apiFormatter.calendar = Calendar(identifier: .iso8601)
+        apiFormatter.locale = Locale(identifier: "en_US_POSIX")
+        apiFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        apiFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return apiFormatter
+    }()
+
     struct GithubError: Decodable, CustomDateDecodable {
         let message: String
         let documentation_url: String
 
-        static var dateDecodingStrategy = JSONDecoder.DateDecodingStrategy.iso8601
+        public static var dateDecodingStrategy = JSONDecoder.DateDecodingStrategy.iso8601
     }
 
     enum GithubEnvironment: CodableStoreHTTPEnvironment {

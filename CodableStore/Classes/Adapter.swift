@@ -7,17 +7,19 @@
 
 import Foundation
 
-public class CodableStoreAdapter<E: CodableStoreEnvironment> {
+open class CodableStoreAdapter<E: CodableStoreEnvironment> {
 
-    typealias Provider = E.SourceType.Provider
+    public init() { }
 
-    func transform(request: Provider.RequestType) -> Provider.RequestType {
+    public typealias Provider = E.SourceType.Provider
+
+    open func transform(request: Provider.RequestType) -> Provider.RequestType {
         return request
     }
-    func transform(response: Provider.ResponseType) -> Provider.ResponseType {
+    open func transform(response: Provider.ResponseType) -> Provider.ResponseType {
         return response
     }
-    func handle<T: Decodable>(error: Error) throws -> T? {
+    open func handle<T: Decodable>(error: Error) throws -> T? {
         return nil
     }
 }
