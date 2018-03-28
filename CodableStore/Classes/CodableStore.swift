@@ -49,7 +49,6 @@ public class CodableStore<E: CodableStoreEnvironment> {
         return self.environment.sourceBase.send(request).then { response in
             return self.adapters.reduce(response, { $1.transform(response: $0) })
         }.then { response -> T in
-            print("send",T.self)
             return try response.deserialize()
         }.recover(execute: { (error) -> T? in
             // we want to iterate adapters and retrieve result from error handler
