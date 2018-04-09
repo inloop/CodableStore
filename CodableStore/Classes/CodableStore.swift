@@ -8,6 +8,10 @@
 import Foundation
 import PromiseKit
 
+enum CodableStoreError: Error {
+    case emptyResponseData
+}
+
 public protocol CodableStoreProviderRequest {
     var debugDescription: String { get }
 }

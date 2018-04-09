@@ -24,7 +24,7 @@ public struct UserDefaultsCodableStoreResult: CodableStoreProviderResponse {
 
     public func deserialize<T>() throws -> T where T : Decodable {
         guard let data = data else {
-            fatalError("empty response data")
+            throw CodableStoreError.emptyResponseData
         }
         return try data.deserialize()
     }
