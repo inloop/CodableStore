@@ -43,6 +43,10 @@ class EnvironmentTests: QuickSpec {
         static var dateEncodingStrategy = JSONEncoder.DateEncodingStrategy.iso8601
     }
 
+    struct MockResponse: Decodable {
+        let id: Int
+    }
+
     // Environment
     enum TestEnvironment: CodableStoreHTTPEnvironment {
 
@@ -90,9 +94,10 @@ class EnvironmentTests: QuickSpec {
 
     enum GithubEnvironment: CodableStoreHTTPEnvironment {
 
-        static var sourceBase = URL(string: "https://api.github.com/")!
+        static var sourceBase = URL(string: "https://api.github.com")!
 
         static let blah: Endpoint<User> = GET("/blah")
+        static let authorize: Endpoint<MockResponse> = GET("/")
     }
 
     class GithubAdapter: CodableStoreAdapter<GithubEnvironment> {
@@ -101,6 +106,15 @@ class EnvironmentTests: QuickSpec {
 
         func resetCounters() {
             errorsHandled = 0
+        }
+
+        override func transform(request: URLRequest) -> URLRequest {
+            if request.url!.absoluteString == GithubEnvironment.sourceBase.absoluteString + "/" {
+                var request = request
+                request.setValue("Basic Zm9vOmJhcg==", forHTTPHeaderField: "Authorization")
+                return request
+            }
+            return request
         }
 
         override func handle<T>(error: Error) throws -> T? where T : Decodable {
@@ -162,9 +176,6 @@ class EnvironmentTests: QuickSpec {
                 adapter.resetCounters()
 
                 store.send(TestEnvironment.listUsers).then { users -> Void in
-                    guard let users = users else {
-                        return
-                    }
                     ids.append(contentsOf:  users.map { $0.id })
                 }
                 expect(ids).toEventually(contain([1,2,3]), timeout: 5)
@@ -182,7 +193,7 @@ class EnvironmentTests: QuickSpec {
                 let endpoint = TestEnvironment.createUser.body(body: user)
 
                 store.send(endpoint).then { user -> Void in
-                    ids.append(user!.id)
+                    ids.append(user.id)
                 }
                 expect(ids).toEventually(contain([user.id]), timeout: 5)
                 expect(adapter.requestsHandled).to(equal(1))
@@ -199,7 +210,7 @@ class EnvironmentTests: QuickSpec {
                 let endpoint = UDTestEnvironment.setCurrentUser.setPayload(user)
 
                 userDefaultsStore.send(endpoint).then { user -> Void in
-                    ids.append(user!.id)
+                    ids.append(user.id)
                 }
                 expect(ids).toEventually(contain([user.id]), timeout: 5)
                 expect(userDefaultsAdapter.requestsHandled).to(equal(1))
@@ -238,7 +249,7 @@ class EnvironmentTests: QuickSpec {
                     }
                     switch error {
                     case .unexpectedStatusCode(let response):
-                        let errorData: GithubError? = response.decodeData()
+                        let errorData: GithubError? = try? response.decodeData()
                         errorMessage = errorData?.message
                         break;
                     case .unexpectedError(_):
@@ -249,7 +260,16 @@ class EnvironmentTests: QuickSpec {
                 expect(githubAdapter.errorsHandled).to(equal(1))
             }
 
-
+            it("catches 401") {
+                var authError: Error? = nil
+                githubAdapter.resetCounters()
+                githubStore
+                    .send(GithubEnvironment.authorize)
+                    .catch { error in
+                        authError = error
+                    }
+                expect(authError).toEventuallyNot(beNil(), timeout: 5)
+            }
         }
     }
 }

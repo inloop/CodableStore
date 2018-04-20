@@ -47,20 +47,22 @@ public class CodableStore<E: CodableStoreEnvironment> {
         #endif
     }
     
-    public func send<T: Decodable>(_ request: E.ProviderRequestType) -> Promise<T?> {
+    public func send<T: Decodable>(_ request: E.ProviderRequestType) -> Promise<T> {
         loggingFn?("[CodableStore:request]", request.debugDescription)
         let request = adapters.reduce(request, { $1.transform(request: $0) })
         return self.environment.sourceBase.send(request).then { response in
             return self.adapters.reduce(response, { $1.transform(response: $0) })
         }.then { response -> T in
             return try response.deserialize()
-        }.recover(execute: { (error) -> T? in
+        }.recover { error -> T in
             // we want to iterate adapters and retrieve result from error handler
             for adapter in self.adapters {
-                return try adapter.handle(error: error)
+                if let result: T = try adapter.handle(error: error) {
+                    return result
+                }
             }
             throw error
-        })
+        }
     }
 
     public func addAdapter(_ adapter: CodableStoreAdapter<E>) {

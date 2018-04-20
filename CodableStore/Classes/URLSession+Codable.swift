@@ -37,8 +37,8 @@ public struct UnexpectedStatusCodeResponse {
     public let response: HTTPURLResponse
     public let data: Data
 
-    public func decodeData<T: Decodable>() -> T? {
-        return try? data.deserialize()
+    public func decodeData<T: Decodable>() throws -> T {
+        return try data.deserialize()
     }
 }
 
