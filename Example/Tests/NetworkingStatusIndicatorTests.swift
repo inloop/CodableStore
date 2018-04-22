@@ -8,7 +8,7 @@ class NetworkingStatusIndicatorTests: QuickSpec {
 
     // Model
     struct User: Codable {
-        let id: Int
+        let identifier: Int
         let name: String
         let username: String
     }
@@ -34,7 +34,7 @@ class NetworkingStatusIndicatorTests: QuickSpec {
 
                 expect(indicator.isNetworkActivityIndicatorVisible).to(equal(false))
 
-                store.send(TestEnvironment.listUsers).then { response in
+                store.send(TestEnvironment.listUsers).then { _ in
                     return
                 }
 
@@ -45,4 +45,3 @@ class NetworkingStatusIndicatorTests: QuickSpec {
         }
     }
 }
-

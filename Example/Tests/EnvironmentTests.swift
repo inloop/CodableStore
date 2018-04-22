@@ -4,7 +4,19 @@ import PromiseKit
 
 import CodableStore
 
-class EnvironmentTests: QuickSpec {
+// Model
+struct User: Codable, CustomDateDecodable, CustomDateEncodable {
+    let identifier: Int
+    let name: String
+    let username: String
+    let birthdate: Date?
+
+    enum CodingKeys: String, CodingKey {
+        case identifier = "id"
+        case name
+        case username
+        case birthdate
+    }
 
     static let apiFormatter: DateFormatter = {
         let apiFormatter = DateFormatter()
@@ -15,37 +27,54 @@ class EnvironmentTests: QuickSpec {
         return apiFormatter
     }()
 
-    // Model
-    struct User: Codable, CustomDateDecodable, CustomDateEncodable {
-        let id: Int
-        let name: String
-        let username: String
-        let birthdate: Date?
+    static var dateEncodingStrategy: JSONEncoder.DateEncodingStrategy = .formatted(apiFormatter)
 
-        static var dateEncodingStrategy: JSONEncoder.DateEncodingStrategy = .formatted(apiFormatter)
-
-        public static var dateDecodingStrategy = JSONDecoder.DateDecodingStrategy.custom { (decoder) -> Date in
-            let container = try decoder.singleValueContainer()
-            let dateStr = try container.decode(String.self)
-            let formatter = apiFormatter
-            if let date = formatter.date(from: dateStr) {
-                return date
-            }
-            fatalError("Invalid date: \(dateStr)")
+    public static var dateDecodingStrategy = JSONDecoder.DateDecodingStrategy.custom { (decoder) -> Date in
+        let container = try decoder.singleValueContainer()
+        let dateStr = try container.decode(String.self)
+        let formatter = apiFormatter
+        if let date = formatter.date(from: dateStr) {
+            return date
         }
+        fatalError("Invalid date: \(dateStr)")
+    }
+}
+
+struct CreateUserRequest: Codable, CustomDateEncodable {
+    let identifier: Int
+    let name: String
+    let username: String
+
+    enum CodingKeys: String, CodingKey {
+        case identifier = "id"
+        case name
+        case username
     }
 
-    struct CreateUserRequest: Codable, CustomDateEncodable {
-        let id: Int
-        let name: String
-        let username: String
+    static var dateEncodingStrategy = JSONEncoder.DateEncodingStrategy.iso8601
+}
 
-        static var dateEncodingStrategy = JSONEncoder.DateEncodingStrategy.iso8601
+struct GithubError: Decodable, CustomDateDecodable {
+    let message: String
+    let documentationUrl: String
+
+    enum CodingKeys: String, CodingKey {
+        case message
+        case documentationUrl = "documentation_url"
     }
 
-    struct MockResponse: Decodable {
-        let id: Int
+    public static var dateDecodingStrategy = JSONDecoder.DateDecodingStrategy.iso8601
+}
+
+struct MockResponse: Decodable {
+    let identifier: Int
+
+    enum CodingKeys: String, CodingKey {
+        case identifier = "id"
     }
+}
+
+class EnvironmentTests: QuickSpec {
 
     // Environment
     enum TestEnvironment: CodableStoreHTTPEnvironment {
@@ -53,8 +82,8 @@ class EnvironmentTests: QuickSpec {
         static var sourceBase = URL(string: "http://jsonplaceholder.typicode.com")!
 
         static let listUsers: Endpoint<[User]> = GET("/users")
-        static let createUser: EndpointWithPayload<CreateUserRequest,User> = POST("/users")
-        static let userDetail: EndpointWithPayload<CreateUserRequest,User> = POST("/users/:id")
+        static let createUser: EndpointWithPayload<CreateUserRequest, User> = POST("/users")
+        static let userDetail: EndpointWithPayload<CreateUserRequest, User> = POST("/users/:id")
     }
 
     class TestAdapter: CodableStoreAdapter<TestEnvironment> {
@@ -84,14 +113,6 @@ class EnvironmentTests: QuickSpec {
     }
 
     // Github Environment
-
-    struct GithubError: Decodable, CustomDateDecodable {
-        let message: String
-        let documentation_url: String
-
-        public static var dateDecodingStrategy = JSONDecoder.DateDecodingStrategy.iso8601
-    }
-
     enum GithubEnvironment: CodableStoreHTTPEnvironment {
 
         static var sourceBase = URL(string: "https://api.github.com")!
@@ -176,9 +197,9 @@ class EnvironmentTests: QuickSpec {
                 adapter.resetCounters()
 
                 store.send(TestEnvironment.listUsers).then { users -> Void in
-                    ids.append(contentsOf:  users.map { $0.id })
+                    ids.append(contentsOf: users.map { $0.identifier })
                 }
-                expect(ids).toEventually(contain([1,2,3]), timeout: 5)
+                expect(ids).toEventually(contain([1, 2, 3]), timeout: 5)
                 expect(adapter.requestsHandled).to(equal(1))
                 expect(adapter.responseHandled).to(equal(1))
                 expect(adapter.errorsHandled).to(equal(0))
@@ -186,16 +207,16 @@ class EnvironmentTests: QuickSpec {
 
             it("write") {
                 var ids = [Int]()
-                let user = CreateUserRequest(id:123, name: "John Doe", username: "john.doe")
+                let user = CreateUserRequest(identifier:123, name: "John Doe", username: "john.doe")
 
                 adapter.resetCounters()
 
                 let endpoint = TestEnvironment.createUser.body(body: user)
 
                 store.send(endpoint).then { user -> Void in
-                    ids.append(user.id)
+                    ids.append(user.identifier)
                 }
-                expect(ids).toEventually(contain([user.id]), timeout: 5)
+                expect(ids).toEventually(contain([user.identifier]), timeout: 5)
                 expect(adapter.requestsHandled).to(equal(1))
                 expect(adapter.responseHandled).to(equal(1))
                 expect(adapter.errorsHandled).to(equal(0))
@@ -203,16 +224,16 @@ class EnvironmentTests: QuickSpec {
 
             it("write userdefaults") {
                 var ids = [Int]()
-                let user = User(id: 123, name: "John Doe", username: "john.doe", birthdate: Date(timeIntervalSince1970: 3600*24*30*12*35))
+                let user = User(identifier: 123, name: "John Doe", username: "john.doe", birthdate: Date(timeIntervalSince1970: 3600*24*30*12*35))
 
                 userDefaultsAdapter.resetCounters()
 
                 let endpoint = UDTestEnvironment.setCurrentUser.setPayload(user)
 
                 userDefaultsStore.send(endpoint).then { user -> Void in
-                    ids.append(user.id)
+                    ids.append(user.identifier)
                 }
-                expect(ids).toEventually(contain([user.id]), timeout: 5)
+                expect(ids).toEventually(contain([user.identifier]), timeout: 5)
                 expect(userDefaultsAdapter.requestsHandled).to(equal(1))
                 expect(userDefaultsAdapter.responseHandled).to(equal(1))
                 expect(userDefaultsAdapter.errorsHandled).to(equal(0))
@@ -229,7 +250,7 @@ class EnvironmentTests: QuickSpec {
             }
 
             it("request query") {
-                let endpoint = TestEnvironment.listUsers.query(["foo":"blah"])
+                let endpoint = TestEnvironment.listUsers.query(["foo": "blah"])
                 endpoint.setQueryValue("bb", forKey: "aa")
 
                 let request = endpoint.getRequest(url: URL(string: "http://example.com")!)
@@ -251,9 +272,9 @@ class EnvironmentTests: QuickSpec {
                     case .unexpectedStatusCode(let response):
                         let errorData: GithubError? = try? response.decodeData()
                         errorMessage = errorData?.message
-                        break;
-                    case .unexpectedError(_):
-                        break;
+                        break
+                    case .unexpectedError:
+                        break
                     }
                 }
                 expect(errorMessage).toEventually(equal("Not Found"), timeout: 5)
@@ -273,4 +294,3 @@ class EnvironmentTests: QuickSpec {
         }
     }
 }
-
