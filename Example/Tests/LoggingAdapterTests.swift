@@ -4,21 +4,27 @@ import PromiseKit
 
 import CodableStore
 
-class LoggingAdapterTests: QuickSpec {
+// Model
+struct LoggingUser: Codable {
+    let identifier: Int
+    let name: String
+    let username: String
 
-    // Model
-    struct User: Codable {
-        let id: Int
-        let name: String
-        let username: String
+    enum CodingKeys: String, CodingKey {
+        case identifier = "id"
+        case name
+        case username
     }
+}
+
+class LoggingAdapterTests: QuickSpec {
 
     // Environment
     enum TestEnvironment: CodableStoreHTTPEnvironment {
 
         static var sourceBase = URL(string: "http://jsonplaceholder.typicode.com")!
 
-        static let listUsers: Endpoint<[User]> = GET("/users")
+        static let listUsers: Endpoint<[LoggingUser]> = GET("/users")
     }
 
     override func spec() {
@@ -27,7 +33,9 @@ class LoggingAdapterTests: QuickSpec {
             var logs: [String] = []
 
             let logging = CodableStoreLoggingAdapter<TestEnvironment>(loggingFn: { (items: Any...) in
-                logs.append((items as! [String]).joined(separator: " "))
+                if let items = items as? [String] {
+                    logs.append(items.joined(separator: " "))
+                }
             })
 
             let store = CodableStore(TestEnvironment.self)
@@ -36,7 +44,7 @@ class LoggingAdapterTests: QuickSpec {
 
             it("should log") {
 
-                store.send(TestEnvironment.listUsers).then { response in
+                store.send(TestEnvironment.listUsers).then { _ in
                     return
                 }
 
