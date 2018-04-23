@@ -17,8 +17,9 @@ public enum CodableStoreEnvironmentHTTPMethod: String {
 
 public class CodableStoreEnvironmentHTTPEndpoint<T: Decodable>: CodableStoreEnvironmentEndpoint<T> {
 
-    var method: CodableStoreEnvironmentHTTPMethod
+    public private(set) var method: CodableStoreEnvironmentHTTPMethod
     public var query: [String: String]? = nil
+
     @discardableResult public func query(_ query: [String: String]) -> Self {
         self.query = query
         return self
@@ -37,25 +38,17 @@ public class CodableStoreEnvironmentHTTPEndpoint<T: Decodable>: CodableStoreEnvi
     }
 
     public func getRequest(url: URL) -> URLRequest {
-
         var components = URLComponents(url: url.appending(path), resolvingAgainstBaseURL: true)!
-
-        if let query = query {
-            var queryItems = [URLQueryItem]()
-            for (key,value) in query {
-                queryItems.append(URLQueryItem(name: key, value: value))
-            }
-            components.queryItems = queryItems
-        }
-
+        components.queryItems = query?.compactMap(URLQueryItem.init)
         var request = URLRequest(url: components.url!)
-        request.httpMethod = self.method.rawValue
+        request.httpMethod = method.rawValue
         return request
     }
 }
 
 public class CodableStoreEnvironmentHTTPPayloadEndpoint<U: Encodable, T: Decodable>: CodableStoreEnvironmentHTTPEndpoint<T> {
     public var body: U? = nil
+
     @discardableResult public func body(body: U) -> Self {
         self.body = body
         return self
