@@ -84,6 +84,7 @@ class EnvironmentTests: QuickSpec {
         static let listUsers: Endpoint<[User]> = GET("/users")
         static let createUser: EndpointWithPayload<CreateUserRequest, User> = POST("/users")
         static let userDetail: EndpointWithPayload<CreateUserRequest, User> = POST("/users/:id")
+        static let twoParams: Endpoint<User> = GET("/users/:id/:id_something")
     }
 
     class TestAdapter: CodableStoreAdapter<TestEnvironment> {
@@ -106,7 +107,7 @@ class EnvironmentTests: QuickSpec {
             responseHandled += 1
             return response
         }
-        override func handle<T>(error: Error) throws -> T? where T : Decodable {
+        override func handle<T>(error: Error) throws -> T? where T: Decodable {
             errorsHandled += 1
             throw error
         }
@@ -138,7 +139,7 @@ class EnvironmentTests: QuickSpec {
             return request
         }
 
-        override func handle<T>(error: Error) throws -> T? where T : Decodable {
+        override func handle<T>(error: Error) throws -> T? where T: Decodable {
             errorsHandled += 1
             throw error
         }
@@ -171,12 +172,13 @@ class EnvironmentTests: QuickSpec {
             responseHandled += 1
             return response
         }
-        override func handle<T>(error: Error) throws -> T? where T : Decodable {
+        override func handle<T>(error: Error) throws -> T? where T: Decodable {
             errorsHandled += 1
             throw error
         }
     }
 
+    // swiftlint:disable:next function_body_length
     override func spec() {
         describe("environment") {
 
@@ -207,7 +209,7 @@ class EnvironmentTests: QuickSpec {
 
             it("write") {
                 var ids = [Int]()
-                let user = CreateUserRequest(identifier:123, name: "John Doe", username: "john.doe")
+                let user = CreateUserRequest(identifier: 123, name: "John Doe", username: "john.doe")
 
                 adapter.resetCounters()
 
@@ -272,7 +274,6 @@ class EnvironmentTests: QuickSpec {
                     case .unexpectedStatusCode(let response):
                         let errorData: GithubError? = try? response.decodeData()
                         errorMessage = errorData?.message
-                        break
                     case .unexpectedError:
                         break
                     }
@@ -290,6 +291,21 @@ class EnvironmentTests: QuickSpec {
                         authError = error
                     }
                 expect(authError).toEventuallyNot(beNil(), timeout: 5)
+            }
+
+            it("correctly substitutes parameters") {
+                let (value1, value2) = ("foo", "bar")
+                let expectedPath = TestEnvironment.sourceBase
+                    .appendingPathComponent("users")
+                    .appendingPathComponent(value1)
+                    .appendingPathComponent(value2)
+                    .path
+                let actualPath = TestEnvironment.twoParams
+                    .setParamValue(value1, forKey: "id")
+                    .setParamValue(value2, forKey: "id_something")
+                    .path
+
+                expect(actualPath).to(equal(expectedPath))
             }
         }
     }
