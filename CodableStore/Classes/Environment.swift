@@ -21,8 +21,8 @@ public class CodableStoreEnvironmentEndpoint<T: Decodable> {
                 )
             }
         }
-        set(value) {
-            _path = value
+        set {
+            _path = newValue
         }
     }
 
