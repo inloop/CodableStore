@@ -13,7 +13,7 @@ public class CodableStoreEnvironmentEndpoint<T: Decodable> {
     private var _path: String
     public var path: String {
         get {
-            return params.reduce(_path) { path, pair in
+            return parameters.reduce(_path) { path, pair in
                 path.replacingOccurrences(
                     of: ":\(pair.key)\\b",
                     with: pair.value,
@@ -26,15 +26,15 @@ public class CodableStoreEnvironmentEndpoint<T: Decodable> {
         }
     }
 
-    public var params: [String: String] = [:]
+    public private(set) var parameters: [String: String] = [:]
 
-    @discardableResult public func setParams(_ params: [String: String]) -> Self {
-        self.params = params
+    @discardableResult public func with(parameters: [String: String]) -> Self {
+        self.parameters = parameters
         return self
     }
 
-    @discardableResult public func setParamValue(_ value: String, forKey key: String) -> Self {
-        params[key] = value
+    @discardableResult public func with(value: String, forParameter key: String) -> Self {
+        parameters[key] = value
         return self
     }
 

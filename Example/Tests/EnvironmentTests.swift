@@ -242,7 +242,7 @@ class EnvironmentTests: QuickSpec {
             }
 
             it("request params") {
-                let endpoint = TestEnvironment.userDetail.setParamValue("123", forKey: "id")
+                let endpoint = TestEnvironment.userDetail.with(value: "123", forParameter: "id")
 
                 let path = endpoint.path
                 let request = endpoint.getRequest(url: URL(string: "http://example.com")!)
@@ -301,8 +301,8 @@ class EnvironmentTests: QuickSpec {
                     .appendingPathComponent(value2)
                     .path
                 let actualPath = TestEnvironment.twoParams
-                    .setParamValue(value1, forKey: "id")
-                    .setParamValue(value2, forKey: "id_something")
+                    .with(value: value1, forParameter: "id")
+                    .with(value: value2, forParameter: "id_something")
                     .path
 
                 expect(actualPath).to(equal(expectedPath))
