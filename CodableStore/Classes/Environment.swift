@@ -9,39 +9,32 @@ import Foundation
 import PromiseKit
 
 public class CodableStoreEnvironmentEndpoint<T: Decodable> {
-
     public typealias ResultType = T
     private var _path: String
     public var path: String {
         get {
-            guard let params = params else {
-                return _path
+            return parameters.reduce(_path) { path, pair in
+                path.replacingOccurrences(
+                    of: ":\(pair.key)\\b",
+                    with: pair.value,
+                    options: .regularExpression
+                )
             }
-
-            var result = _path
-            for (key,value) in params {
-                // TODO: replace by regexp because :id could mismatch with :id_something etc.
-                result = result.replacingOccurrences(of: ":\(key)", with: value)
-            }
-
-            return result
         }
-        set(value) {
-            _path = value
+        set {
+            _path = newValue
         }
     }
 
-    public var params: [String: String]? = nil
+    public private(set) var parameters: [String: String] = [:]
 
-    @discardableResult public func params(_ params: [String: String]) -> Self {
-        self.params = params
+    @discardableResult public func with(parameters: [String: String]) -> Self {
+        self.parameters = parameters
         return self
     }
 
-    @discardableResult public func setParamValue(_ value: String, forKey key: String) -> Self {
-        var _params = params ?? [:]
-        _params[key] = value
-        self.params = _params
+    @discardableResult public func with(value: String, forParameter key: String) -> Self {
+        parameters[key] = value
         return self
     }
 
