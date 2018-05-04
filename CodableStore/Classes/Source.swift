@@ -9,7 +9,6 @@ import Foundation
 import PromiseKit
 
 public protocol CodableStoreSource {
-
     associatedtype Provider: CodableStoreProvider
 
     func send(_ request: Provider.RequestType) -> Promise<Provider.ResponseType>
@@ -22,21 +21,21 @@ extension String: CodableStoreSource {
     public typealias Provider = UserDefaults
 
     public func get<T>() -> Promise<T?> where T : Decodable {
-        let request = UserDefaultsCodableStoreRequest(method: .get, key: self)
+        let request = KeyedStoreRequest.get(key: self)
         return UserDefaults.standard.send(request).then { response -> T? in
             return try response.data?.deserialize()
         }
     }
 
     public func set<T: Encodable, U: Decodable>(_ item: T) -> Promise<U?> {
-        let request = UserDefaultsCodableStoreRequest(method: .set(item), key: self)
+        let request = KeyedStoreRequest.set(key: self, value: item)
         return UserDefaults.standard.send(request).then { response -> U? in
             let res: U =  try response.data!.deserialize()
             return res
         }
     }
 
-    public func send(_ request: UserDefaultsCodableStoreRequest) -> Promise<UserDefaults.ResponseType> {
+    public func send(_ request: KeyedStoreRequest) -> Promise<UserDefaults.ResponseType> {
         return UserDefaults.standard.send(request)
     }
 }

@@ -146,7 +146,7 @@ class EnvironmentTests: QuickSpec {
     }
 
     // UserDefaults Environment
-    enum UDTestEnvironment: CodableStoreUserDefaultsEnvironment {
+    enum UDTestEnvironment: CodableStoreKeyedStoreProviderEnvironment {
         static var sourceBase = "blah_key"
 
         static let currentUser: Endpoint<User> = GET("/currentUser")
@@ -164,11 +164,11 @@ class EnvironmentTests: QuickSpec {
             errorsHandled = 0
         }
 
-        override func transform(request: UserDefaultsCodableStoreRequest) -> UserDefaultsCodableStoreRequest {
+        override func transform(request: KeyedStoreRequest) -> KeyedStoreRequest {
             requestsHandled += 1
             return request
         }
-        override func transform(response: UserDefaultsCodableStoreResult) -> UserDefaultsCodableStoreResult {
+        override func transform(response: KeyedStoreResponse) -> KeyedStoreResponse {
             responseHandled += 1
             return response
         }
