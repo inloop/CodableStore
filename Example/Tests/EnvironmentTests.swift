@@ -66,6 +66,14 @@ struct GithubError: Decodable, CustomDateDecodable {
     public static var dateDecodingStrategy = JSONDecoder.DateDecodingStrategy.iso8601
 }
 
+struct GithubErrorSnakeCase: Decodable, CustomDateDecodable, CustomKeyDecodable {
+    let message: String
+    let documentationUrl: String
+
+    public static var dateDecodingStrategy = JSONDecoder.DateDecodingStrategy.iso8601
+    public static var keyDecodingStrategy = JSONDecoder.KeyDecodingStrategy.convertFromSnakeCase
+}
+
 struct MockResponse: Decodable {
     let identifier: Int
 
@@ -118,7 +126,7 @@ class EnvironmentTests: QuickSpec {
 
         static var sourceBase = URL(string: "https://api.github.com")!
 
-        static let blah: Endpoint<User> = GET("/blah")
+        static let dummy: Endpoint<User> = GET("/dummy")
         static let authorize: Endpoint<MockResponse> = GET("/")
     }
 
@@ -147,7 +155,7 @@ class EnvironmentTests: QuickSpec {
 
     // UserDefaults Environment
     enum UDTestEnvironment: CodableStoreUserDefaultsEnvironment {
-        static var sourceBase = "blah_key"
+        static var sourceBase = "dummy_key"
 
         static let currentUser: Endpoint<User> = GET("/currentUser")
         static let setCurrentUser: EndpointWithPayload<User, User> = SET("/currentUser")
@@ -252,17 +260,17 @@ class EnvironmentTests: QuickSpec {
             }
 
             it("request query") {
-                let endpoint = TestEnvironment.listUsers.query(["foo": "blah"])
+                let endpoint = TestEnvironment.listUsers.query(["foo": "dummy"])
                 endpoint.setQueryValue("bb", forKey: "aa")
 
                 let request = endpoint.getRequest(url: URL(string: "http://example.com")!)
 
-                expect(request.url?.absoluteString).to(equal("http://example.com/users?aa=bb&foo=blah"))
+                expect(request.url?.absoluteString).to(equal("http://example.com/users?aa=bb&foo=dummy"))
             }
 
             it("error parsing") {
                 var errorMessage: String? = nil
-                let endpoint = GithubEnvironment.blah
+                let endpoint = GithubEnvironment.dummy
 
                 githubAdapter.resetCounters()
 
@@ -273,6 +281,28 @@ class EnvironmentTests: QuickSpec {
                     switch error {
                     case .unexpectedStatusCode(let response):
                         let errorData: GithubError? = try? response.decodeData()
+                        errorMessage = errorData?.message
+                    case .unexpectedError:
+                        break
+                    }
+                }
+                expect(errorMessage).toEventually(equal("Not Found"), timeout: 5)
+                expect(githubAdapter.errorsHandled).to(equal(1))
+            }
+
+            it("error parsing (SnakeCase decoding)") {
+                var errorMessage: String? = nil
+                let endpoint = GithubEnvironment.dummy
+
+                githubAdapter.resetCounters()
+
+                githubStore.send(endpoint).catch { error in
+                    guard let error = error as? URLSessionCodableError else {
+                        return
+                    }
+                    switch error {
+                    case .unexpectedStatusCode(let response):
+                        let errorData: GithubErrorSnakeCase? = try? response.decodeData()
                         errorMessage = errorData?.message
                     case .unexpectedError:
                         break
