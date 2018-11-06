@@ -1,35 +1,33 @@
 PODS:
   - CodableStore (0.1.0):
-    - PromiseKit (~> 4.4)
-  - Nimble (7.0.3)
-  - PromiseKit (4.5.1):
-    - PromiseKit/Foundation (= 4.5.1)
-    - PromiseKit/QuartzCore (= 4.5.1)
-    - PromiseKit/UIKit (= 4.5.1)
-  - PromiseKit/CorePromise (4.5.1)
-  - PromiseKit/Foundation (4.5.1):
+    - PromiseKit (~> 6.5)
+  - Nimble (7.3.1)
+  - PromiseKit (6.5.1):
+    - PromiseKit/CorePromise (= 6.5.1)
+    - PromiseKit/Foundation (= 6.5.1)
+    - PromiseKit/UIKit (= 6.5.1)
+  - PromiseKit/CorePromise (6.5.1)
+  - PromiseKit/Foundation (6.5.1):
     - PromiseKit/CorePromise
-  - PromiseKit/QuartzCore (4.5.1):
+  - PromiseKit/UIKit (6.5.1):
     - PromiseKit/CorePromise
-  - PromiseKit/UIKit (4.5.1):
-    - PromiseKit/CorePromise
-  - Quick (1.2.0)
+  - Quick (1.3.2)
 
 DEPENDENCIES:
   - CodableStore (from `../`)
-  - Nimble (~> 7.0)
-  - Quick (~> 1.2)
+  - Nimble (~> 7.3)
+  - Quick (~> 1.3)
 
 EXTERNAL SOURCES:
   CodableStore:
     :path: ../
 
 SPEC CHECKSUMS:
-  CodableStore: 9184a7478919f138f39a512a488f0025085178e6
-  Nimble: 7f5a9c447a33002645a071bddafbfb24ea70e0ac
-  PromiseKit: 445dac9b2c3c3b4b31b5f842bc325700b848a8bd
-  Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
+  CodableStore: 567669e09467d81950eea71647257258dedde6db
+  Nimble: 04f732da099ea4d153122aec8c2a88fd0c7219ae
+  PromiseKit: 162f56c89aae9989ffc14476a5f821af17c3f4ba
+  Quick: 2623cb30d7a7f41ca62f684f679586558f483d46
 
-PODFILE CHECKSUM: fe56678dbc0edaef783f83273a4d1b8c98d7be02
+PODFILE CHECKSUM: a88f2672ca1a5271d65fb53daa54a076d8afc197
 
 COCOAPODS: 1.3.1

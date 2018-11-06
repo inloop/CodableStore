@@ -69,6 +69,7 @@ public protocol CodableStoreHTTPEnvironment: CodableStoreEnvironment where Sourc
 
     typealias Endpoint = CodableStoreEnvironmentHTTPEndpoint
     typealias EndpointWithPayload = CodableStoreEnvironmentHTTPPayloadEndpoint
+
 }
 
 
@@ -90,13 +91,16 @@ extension CodableStoreHTTPEnvironment {
         return CodableStoreEnvironmentHTTPEndpoint(.delete, path)
     }
 
-    public static func request<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> ProviderRequestType {
-        let source = sourceBase.appending(endpoint.path)
-        let request = URLRequest(url: source)
+    public static func request<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> CodableStoreRequest<T,Self> {
+        return CodableStoreRequest(source: self.sourceBase, request: self.providerRequest(endpoint))
+    }
 
+    public static func providerRequest<T: Decodable>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> ProviderRequestType {
+        let source = sourceBase.appending(endpoint.path)
         if let endpoint = endpoint as? CodableStoreEnvironmentHTTPEndpoint<T> {
             return endpoint.getRequest(url: sourceBase)
         }
-        return request
+        return URLRequest(url: source)
     }
+
 }

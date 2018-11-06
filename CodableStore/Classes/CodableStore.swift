@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 enum CodableStoreError: Error {
     case emptyResponseData
@@ -24,8 +23,10 @@ public protocol CodableStoreProvider {
 
     associatedtype RequestType: CodableStoreProviderRequest
     associatedtype ResponseType: CodableStoreProviderResponse
-    
-    func send(_ request: RequestType) -> Promise<ResponseType>
+
+    typealias ResponseHandler = (ResponseType?, Error?) -> Void
+
+    func send(_ request: RequestType, _ handler: @escaping ResponseHandler)
 }
 
 public typealias CodableStoreLoggingFn = (_ items: Any...) -> Void
@@ -46,23 +47,16 @@ public class CodableStore<E: CodableStoreEnvironment> {
             }
         #endif
     }
-    
-    public func send<T: Decodable>(_ request: E.ProviderRequestType) -> Promise<T> {
+
+    @discardableResult public func request<T: Decodable>(_ request: E.ProviderRequestType) -> CodableStoreRequest<T,E> {
         loggingFn?("[CodableStore:request]", request.debugDescription)
         let request = adapters.reduce(request, { $1.transform(request: $0) })
-        return self.environment.sourceBase.send(request).then { response in
-            return self.adapters.reduce(response, { $1.transform(response: $0) })
-        }.then { response -> T in
-            return try response.deserialize()
-        }.recover { error -> T in
-            // we want to iterate adapters and retrieve result from error handler
-            for adapter in self.adapters {
-                if let result: T = try adapter.handle(error: error) {
-                    return result
-                }
-            }
-            throw error
-        }
+        return CodableStoreRequest(source: self.environment.sourceBase, request: request, adapters: adapters)
+    }
+
+    @discardableResult public func request<T:Decodable>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> CodableStoreRequest<T,E> {
+        let request = self.environment.providerRequest(endpoint)
+        return self.request(request)
     }
 
     public func addAdapter(_ adapter: CodableStoreAdapter<E>) {

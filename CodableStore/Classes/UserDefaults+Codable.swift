@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import PromiseKit
 
 public struct UserDefaultsCodableStoreRequest: CodableStoreProviderRequest {
 
@@ -35,16 +34,17 @@ extension UserDefaults: CodableStoreProvider {
     public typealias RequestType = UserDefaultsCodableStoreRequest
     public typealias ResponseType = UserDefaultsCodableStoreResult
 
-    public func send(_ request: UserDefaultsCodableStoreRequest) -> Promise<UserDefaults.ResponseType> {
+    public func send(_ request: RequestType, _ handler: @escaping ResponseHandler) {
         switch request.method {
         case .get:
-            return Promise(value: UserDefaults.ResponseType(data: get(request.key)))
+            let res = UserDefaults.ResponseType(data: get(request.key))
+            handler(res, nil)
         case .set(let item):
             do {
                 let value = try set(item, for: request.key)
-                return Promise(value: UserDefaults.ResponseType(data: value))
+                handler(UserDefaults.ResponseType(data: value), nil)
             } catch {
-                return Promise(error: error)
+                handler(nil, error)
             }
         }
     }

@@ -23,7 +23,7 @@ struct User: Codable, CustomDateDecodable, CustomDateEncodable {
         apiFormatter.calendar = Calendar(identifier: .iso8601)
         apiFormatter.locale = Locale(identifier: "en_US_POSIX")
         apiFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-        apiFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        apiFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
         return apiFormatter
     }()
 
@@ -132,13 +132,16 @@ class EnvironmentTests: QuickSpec {
 
     class GithubAdapter: CodableStoreAdapter<GithubEnvironment> {
 
+        var requestsHandled = 0
         var errorsHandled = 0
 
         func resetCounters() {
             errorsHandled = 0
+            requestsHandled = 0
         }
 
         override func transform(request: URLRequest) -> URLRequest {
+            requestsHandled += 1
             if request.url!.absoluteString == GithubEnvironment.sourceBase.absoluteString + "/" {
                 var request = request
                 request.setValue("Basic Zm9vOmJhcg==", forHTTPHeaderField: "Authorization")
@@ -206,9 +209,9 @@ class EnvironmentTests: QuickSpec {
 
                 adapter.resetCounters()
 
-                store.send(TestEnvironment.listUsers).then { users -> Void in
+                store.send(TestEnvironment.listUsers).done { (users: [User]) -> Void in
                     ids.append(contentsOf: users.map { $0.identifier })
-                }
+                }.cauterize()
                 expect(ids).toEventually(contain([1, 2, 3]), timeout: 5)
                 expect(adapter.requestsHandled).to(equal(1))
                 expect(adapter.responseHandled).to(equal(1))
@@ -223,9 +226,9 @@ class EnvironmentTests: QuickSpec {
 
                 let endpoint = TestEnvironment.createUser.body(body: user)
 
-                store.send(endpoint).then { user -> Void in
+                store.send(endpoint).done { (user: User) -> Void in
                     ids.append(user.identifier)
-                }
+                }.cauterize()
                 expect(ids).toEventually(contain([user.identifier]), timeout: 5)
                 expect(adapter.requestsHandled).to(equal(1))
                 expect(adapter.responseHandled).to(equal(1))
@@ -239,10 +242,13 @@ class EnvironmentTests: QuickSpec {
                 userDefaultsAdapter.resetCounters()
 
                 let endpoint = UDTestEnvironment.setCurrentUser.setPayload(user)
-
-                userDefaultsStore.send(endpoint).then { user -> Void in
+                userDefaultsStore.send(endpoint).done { (user: User?) in
+                    guard let user = user else {
+                        return
+                    }
                     ids.append(user.identifier)
-                }
+                }.cauterize()
+
                 expect(ids).toEventually(contain([user.identifier]), timeout: 5)
                 expect(userDefaultsAdapter.requestsHandled).to(equal(1))
                 expect(userDefaultsAdapter.responseHandled).to(equal(1))
@@ -265,7 +271,9 @@ class EnvironmentTests: QuickSpec {
 
                 let request = endpoint.getRequest(url: URL(string: "http://example.com")!)
 
-                expect(request.url?.absoluteString).to(equal("http://example.com/users?aa=bb&foo=dummy"))
+                expect(request.url?.absoluteString).to(contain("http://example.com/users"))
+                expect(request.url?.absoluteString).to(contain("aa=bb"))
+                expect(request.url?.absoluteString).to(contain("foo=dummy"))
             }
 
             it("error parsing") {
@@ -287,6 +295,7 @@ class EnvironmentTests: QuickSpec {
                     }
                 }
                 expect(errorMessage).toEventually(equal("Not Found"), timeout: 5)
+                expect(githubAdapter.requestsHandled).to(equal(1))
                 expect(githubAdapter.errorsHandled).to(equal(1))
             }
 
@@ -309,6 +318,7 @@ class EnvironmentTests: QuickSpec {
                     }
                 }
                 expect(errorMessage).toEventually(equal("Not Found"), timeout: 5)
+                expect(githubAdapter.requestsHandled).to(equal(1))
                 expect(githubAdapter.errorsHandled).to(equal(1))
             }
 

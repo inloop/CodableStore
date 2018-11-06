@@ -19,9 +19,9 @@ class Tests: QuickSpec {
 
                 teslaKey.set(tesla).then { (_: Company?) -> Promise<Company?> in
                     return teslaKey.get()
-                }.then { result -> Void in
-                    expect(tesla.name).to(equal(result?.name))
-                }
+                }.done { result in
+                    expect(tesla.name).to(equal(result!.name))
+                }.cauterize()
             }
 
             it("array of instances") {
@@ -32,10 +32,10 @@ class Tests: QuickSpec {
 
                 companiesKey.set([tesla, spacex]).then { (_: Company?) -> Promise<[Company]?> in
                     return companiesKey.get()
-                }.then { companies -> Void in
+                }.done { (companies: [Company]?) in
                     let companyNames: [String]? = companies?.map({ $0.name })
                     expect([tesla.name, spacex.name]).to(equal(companyNames))
-                }
+                }.cauterize()
             }
         }
 
@@ -57,12 +57,12 @@ class Tests: QuickSpec {
                 let url = URL(string: "http://jsonplaceholder.typicode.com/posts")!
                 var ids = [Int]()
 
-                url.get().then { (posts: [Post]?) -> Void in
+                url.get().done { (posts: [Post]?) -> Void in
                     guard let posts = posts else {
                         return
                     }
                     ids.append(contentsOf: posts.map { $0.identifier })
-                }
+                }.cauterize()
 
                 expect(ids).toEventually(contain([1, 2, 3]), timeout: 5)
             }
@@ -72,9 +72,9 @@ class Tests: QuickSpec {
                 var ids = [Int]()
                 let post = Post(identifier: 124, title: "title", body: "body")
 
-                url.set(post).then { (post: Post?) -> Void in
+                url.set(post).done { (post: Post?) -> Void in
                     ids.append(post!.identifier)
-                }
+                }.cauterize()
                 expect(ids).toEventually(contain([post.identifier]), timeout: 5)
             }
         }

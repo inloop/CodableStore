@@ -44,12 +44,10 @@ class LoggingAdapterTests: QuickSpec {
 
             it("should log") {
 
-                store.send(TestEnvironment.listUsers).then { _ in
-                    return
-                }
+                store.send(TestEnvironment.listUsers)
 
                 expect(logs.count).toEventually(equal(2))
-                expect(logs[0]).toEventually(equal("[CodableStore:request] curl -v -X GET 'http://jsonplaceholder.typicode.com/users'"))
+                expect(logs.first).toEventually(equal("[CodableStore:request] curl -v -X GET 'http://jsonplaceholder.typicode.com/users'"))
                 let idx = logs[1].index(logs[1].startIndex, offsetBy: 30)
                 expect(logs[1][...idx]).toEventually(equal("[CodableStore:response] [\n  {\n   "[...idx]))
             }

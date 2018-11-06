@@ -5,7 +5,6 @@
 //  Created by Jakub Knejzlik on 14/02/2018.
 //
 import Foundation
-import PromiseKit
 
 extension URLRequest: CodableStoreProviderRequest {
     public var debugDescription: String {
@@ -66,14 +65,27 @@ extension URLSession: CodableStoreProvider {
     public typealias RequestType = URLRequest
     public typealias ResponseType = URLSessionCodableResponse
 
-    public func send(_ request: URLRequest) -> Promise<URLSession.ResponseType> {
-        return _send(request)
-    }
+    public func send(_ request: RequestType, _ handler: @escaping ResponseHandler) {
+        var task: URLSessionDataTask? = nil
+        task = self.dataTask(with: request, completionHandler: { (data, response, error) in
+            if let error = error {
+                return handler(nil, URLSessionCodableError.unexpectedError(error: error))
+            }
 
-    private func _send(_ request: URLSession.RequestType) -> Promise<URLSessionCodableResponse> {
-        return Promise<URLSessionCodableResponse> { (resolve, reject) in
-            self.dataTask(with: request, completionHandler: HTTPResponsePromiseHandler(resolve, reject)).resume()
-        }
+            guard let data = data else {
+                assertionFailure("no data")
+                return
+            }
+
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode >= 400 {
+                let errorResponse = UnexpectedStatusCodeResponse(statusCode: httpResponse.statusCode, response: httpResponse, data: data)
+                return handler(nil, URLSessionCodableError.unexpectedStatusCode(response: errorResponse))
+            }
+
+            let response = URLSessionCodableResponse(data: data, response: response)
+            handler(response, nil)
+        })
+        task?.resume()
     }
 }
 
@@ -87,25 +99,5 @@ extension Encodable {
         request.httpMethod = method
 
         return request
-    }
-}
-
-private func HTTPResponsePromiseHandler(_ resolve: @escaping (URLSessionCodableResponse) -> Void, _ reject: @escaping (URLSessionCodableError) -> Void) -> (Data?, URLResponse?, Error?) -> Void {
-    return { data, response, error in
-        if let error = error {
-            return reject(URLSessionCodableError.unexpectedError(error: error))
-        }
-
-        guard let data = data else {
-            assertionFailure("no data")
-            return
-        }
-
-        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode >= 400 {
-            let errorResponse = UnexpectedStatusCodeResponse(statusCode: httpResponse.statusCode, response: httpResponse, data: data)
-            return reject(URLSessionCodableError.unexpectedStatusCode(response: errorResponse))
-        }
-
-        resolve(URLSessionCodableResponse(data: data, response: response))
     }
 }
