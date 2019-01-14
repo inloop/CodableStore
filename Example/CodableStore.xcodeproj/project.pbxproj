@@ -61,7 +61,7 @@
 		8BE9F13A867550076EC558F1 /* Pods-CodableStore_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CodableStore_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-CodableStore_Example/Pods-CodableStore_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		A2E467917897E9C472446CCF /* Pods-CodableStore_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CodableStore_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-CodableStore_Example/Pods-CodableStore_Example.release.xcconfig"; sourceTree = "<group>"; };
 		AEF89F59968100D6F8AEB1F4 /* Pods_CodableStore_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CodableStore_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		CB59185BC673A2E98C70CA07 /* CodableStore.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = CodableStore.podspec; path = ../CodableStore.podspec; sourceTree = "<group>"; };
+		CB59185BC673A2E98C70CA07 /* CodableStore.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = CodableStore.podspec; path = ../CodableStore.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		EECB9F1B20627852009D54DF /* LoggingAdapterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingAdapterTests.swift; sourceTree = "<group>"; };
 		EECB9F24206C3CF1009D54DF /* NetworkingStatusIndicatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingStatusIndicatorTests.swift; sourceTree = "<group>"; };
 		EED96A922040408E007FD093 /* EnvironmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentTests.swift; sourceTree = "<group>"; };
@@ -194,7 +194,6 @@
 				607FACCD1AFB9204008FA782 /* Frameworks */,
 				607FACCE1AFB9204008FA782 /* Resources */,
 				B15E49401906E35C27326C57 /* [CP] Embed Pods Frameworks */,
-				35EAFCF65070FEA6D01B0A7D /* [CP] Copy Pods Resources */,
 				EE3DBCF8203138DA0085F78F /* Embed Frameworks */,
 			);
 			buildRules = (
@@ -215,7 +214,6 @@
 				607FACE21AFB9204008FA782 /* Frameworks */,
 				607FACE31AFB9204008FA782 /* Resources */,
 				C2D64C07DB080AD874A448CE /* [CP] Embed Pods Frameworks */,
-				C2226902CBA10AC0F56B72C6 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -239,11 +237,11 @@
 				TargetAttributes = {
 					607FACCF1AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1010;
 					};
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1010;
 						TestTargetID = 607FACCF1AFB9204008FA782;
 					};
 				};
@@ -288,21 +286,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		35EAFCF65070FEA6D01B0A7D /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CodableStore_Example/Pods-CodableStore_Example-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		7DB5A50BA9237E565001A54A /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -357,21 +340,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CodableStore_Example/Pods-CodableStore_Example-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C2226902CBA10AC0F56B72C6 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CodableStore_Tests/Pods-CodableStore_Tests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C2D64C07DB080AD874A448CE /* [CP] Embed Pods Frameworks */ = {
@@ -579,8 +547,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -596,8 +563,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = ALPHA;
-				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
@@ -618,8 +584,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -636,8 +601,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
