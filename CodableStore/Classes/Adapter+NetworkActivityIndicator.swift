@@ -9,28 +9,43 @@ import UIKit
 import Foundation
 
 final public class CodableStoreNetworkActivityIndicatorAdapter<E: CodableStoreEnvironment>: CodableStoreAdapter<E> {
-    
+    private let queue = DispatchQueue(
+        label: "com.codablestore.networkactivityadapter.update",
+        qos: .userInitiated
+    )
     private var counter = 0
-    public var isNetworkActivityIndicatorVisible = false
+    private var _isNetworkActivityIndicatorVisible = false
 
-    private func updateIndicator() {
-        isNetworkActivityIndicatorVisible = counter > 0
-        UIApplication.shared.isNetworkActivityIndicatorVisible = isNetworkActivityIndicatorVisible
+    public var isNetworkActivityIndicatorVisible: Bool {
+        var isVisible = false
+        queue.sync {
+            isVisible = self._isNetworkActivityIndicatorVisible
+        }
+        return isVisible
     }
 
+
     override public func transform(request: Provider.RequestType) -> Provider.RequestType {
-        counter += 1
-        updateIndicator()
+        update(increment: 1)
         return request
     }
     override public func transform(response: Provider.ResponseType) -> Provider.ResponseType {
-        counter -= 1
-        updateIndicator()
+        update(increment: -1)
         return response
     }
     override public func handle<T: Decodable>(error: Error) throws -> T? {
-        counter -= 1
-        updateIndicator()
+        update(increment: -1)
         return nil
+    }
+
+    private func update(increment: Int) {
+        queue.sync {
+            self.counter += increment
+            let isVisible = self.counter > 0
+            self._isNetworkActivityIndicatorVisible = isVisible
+            DispatchQueue.main.async {
+                UIApplication.shared.isNetworkActivityIndicatorVisible = isVisible
+            }
+        }
     }
 }
