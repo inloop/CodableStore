@@ -220,7 +220,7 @@ class EnvironmentTests: QuickSpec {
 
             it("write") {
                 var ids = [Int]()
-                let user = CreateUserRequest(identifier: 123, name: "John Doe", username: "john.doe")
+                let user = CreateUserRequest(identifier: 11, name: "John Doe", username: "john.doe")
 
                 adapter.resetCounters()
 

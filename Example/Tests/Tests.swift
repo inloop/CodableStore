@@ -70,7 +70,7 @@ class Tests: QuickSpec {
             it("write") {
                 let url = URL(string: "http://jsonplaceholder.typicode.com/posts")!
                 var ids = [Int]()
-                let post = Post(identifier: 124, title: "title", body: "body")
+                let post = Post(identifier: 101, title: "title", body: "body")
 
                 url.set(post).done { (post: Post?) -> Void in
                     ids.append(post!.identifier)
