@@ -8,7 +8,6 @@
 import Foundation
 import PromiseKit
 
-
 public class CodableStoreEnvironmentEndpoint<T: Decodable> {
     public typealias ResultType = T
     private var _path: String
