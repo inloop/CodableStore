@@ -82,6 +82,36 @@ struct MockResponse: Decodable {
     }
 }
 
+struct CustomDateSubject: Codable, CustomDateEncodable, CustomDateDecodable, Equatable {
+    let date: Date
+    static var dateEncodingStrategyUsed: () -> Void = {}
+    static var dateDecodingStrategyUsed: () -> Void = {}
+
+    enum CodingKeys: String, CodingKey {
+        case date
+    }
+
+    static var dateEncodingStrategy = JSONEncoder.DateEncodingStrategy.custom { (date, encoder) in
+        dateEncodingStrategyUsed()
+        var container = encoder.singleValueContainer()
+        try container.encode(User.apiFormatter.string(from: date))
+    }
+
+    static var dateDecodingStrategy = JSONDecoder.DateDecodingStrategy.custom { (decoder) -> Date in
+        dateDecodingStrategyUsed()
+        let container = try decoder.singleValueContainer()
+        let dateString = try container.decode(String.self)
+        if let date =  User.apiFormatter.date(from: dateString) {
+            return date
+        }
+        fatalError("Invalid date: \(dateString)")
+    }
+
+    public static func == (lhs: CustomDateSubject, rhs: CustomDateSubject) -> Bool {
+        return Calendar.current.compare(lhs.date, to: rhs.date, toGranularity: .nanosecond) == .orderedSame
+    }
+}
+
 class EnvironmentTests: QuickSpec {
 
     // Environment
@@ -346,6 +376,29 @@ class EnvironmentTests: QuickSpec {
                     .path
 
                 expect(actualPath).to(equal(expectedPath))
+            }
+
+            it("encodes and decodes using custom strategy") {
+                var encoded = false
+                var decoded = false
+
+                CustomDateSubject.dateEncodingStrategyUsed = {
+                    encoded = true
+                }
+                CustomDateSubject.dateDecodingStrategyUsed = {
+                    decoded = true
+                }
+
+                do {
+                    let expected = CustomDateSubject(date: Date())
+                    let data: Data = try expected.serialize()
+                    let actual: CustomDateSubject = try data.deserialize()
+                    expect(actual).to(equal(expected))
+                } catch {
+                    fail(error.localizedDescription)
+                }
+
+                expect([encoded, decoded]).toEventually(equal([true, true]))
             }
         }
     }
