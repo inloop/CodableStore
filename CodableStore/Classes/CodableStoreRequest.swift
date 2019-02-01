@@ -31,7 +31,8 @@ public class CodableStoreRequest<T: Decodable,E: CodableStoreEnvironment> {
                 let resultResult: E.ProviderResponseType = self.adapters.reduce(result, { (value: E.ProviderResponseType, nextAdapter: CodableStoreAdapter<E>) in
                     return nextAdapter.transform(response: value)
                 })
-                handler(try resultResult.deserialize(), nil)
+                let deserialized: U.ResultType = try resultResult.deserialize()
+                handler(deserialized, nil)
             } catch {
                 do{
                     let result = try self.recoverWithAdapters(error)
