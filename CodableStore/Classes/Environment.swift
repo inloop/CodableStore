@@ -43,23 +43,14 @@ public class CodableStoreEnvironmentEndpoint<T: Decodable> {
     }
 }
 
-public protocol CodableStoreEnvironmentable {
-    func requestForEndpoint()
-}
-
 public protocol CodableStoreEnvironment {
     associatedtype SourceType: CodableStoreSource
     typealias ProviderRequestType = SourceType.Provider.RequestType
+    typealias ProviderResponseType = SourceType.Provider.ResponseType
     static var sourceBase: SourceType { get }
 
-    static func request<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> ProviderRequestType
-}
-
-extension CodableStore {
-    public func send<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> Promise<T> {
-        let request = environment.request(endpoint)
-        return send(request)
-    }
+    static func request<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> CodableStoreRequest<T, Self>
+    static func providerRequest<T: Decodable>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> ProviderRequestType 
 }
 
 

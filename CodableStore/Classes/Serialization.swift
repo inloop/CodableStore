@@ -54,13 +54,10 @@ extension Data: CodableStoreSerializer, CodableStoreDeserializer {
     public func deserialize<T: Decodable>() throws -> T {
         if let data = self as? T {
             return data
-        } else {
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = (T.self as? CustomDateDecodable.Type)?.dateDecodingStrategy ?? .iso8601
-            decoder.keyDecodingStrategy = (T.self as? CustomKeyDecodable.Type)?.keyDecodingStrategy ?? .useDefaultKeys
-            return try decoder.decode(T.self, from: self)
         }
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = (T.self as? CustomDateDecodable.Type)?.dateDecodingStrategy ?? .iso8601
+        decoder.keyDecodingStrategy = (T.self as? CustomKeyDecodable.Type)?.keyDecodingStrategy ?? .useDefaultKeys
+        return try decoder.decode(T.self, from: self)
     }
-
-
 }

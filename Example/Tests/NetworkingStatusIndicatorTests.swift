@@ -34,9 +34,7 @@ class NetworkingStatusIndicatorTests: QuickSpec {
 
                 expect(indicator.isNetworkActivityIndicatorVisible).to(equal(false))
 
-                store.send(TestEnvironment.listUsers).then { _ in
-                    return
-                }
+                store.send(TestEnvironment.listUsers)
 
                 expect(indicator.isNetworkActivityIndicatorVisible).to(equal(true))
 

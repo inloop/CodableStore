@@ -6,13 +6,14 @@
 //
 
 import Foundation
-import PromiseKit
 
 public protocol CodableStoreSource {
 
     associatedtype Provider: CodableStoreProvider
 
-    func send(_ request: Provider.RequestType) -> Promise<Provider.ResponseType>
+    func get(_ handler: @escaping Provider.ResponseHandler) -> Void
+    func set(_ item: Encodable,_ handler: @escaping Provider.ResponseHandler) -> Void
+    func send(_ request: Provider.RequestType, _ handler: @escaping Provider.ResponseHandler)
 
     func appending(_ path: String) -> Self
 }
@@ -21,23 +22,18 @@ extension String: CodableStoreSource {
 
     public typealias Provider = UserDefaults
 
-    public func get<T>() -> Promise<T?> where T : Decodable {
+    public func get(_ handler: @escaping Provider.ResponseHandler) {
         let request = UserDefaultsCodableStoreRequest(method: .get, key: self)
-        return UserDefaults.standard.send(request).then { response -> T? in
-            return try response.data?.deserialize()
-        }
+        self.send(request, handler)
     }
 
-    public func set<T: Encodable, U: Decodable>(_ item: T) -> Promise<U?> {
+    public func set(_ item: Encodable, _ handler: @escaping Provider.ResponseHandler) {
         let request = UserDefaultsCodableStoreRequest(method: .set(item), key: self)
-        return UserDefaults.standard.send(request).then { response -> U? in
-            let res: U =  try response.data!.deserialize()
-            return res
-        }
+        self.send(request, handler)
     }
 
-    public func send(_ request: UserDefaultsCodableStoreRequest) -> Promise<UserDefaults.ResponseType> {
-        return UserDefaults.standard.send(request)
+    public func send(_ request: Provider.RequestType, _ handler: @escaping Provider.ResponseHandler) {
+        UserDefaults.standard.send(request, handler)
     }
 }
 
@@ -45,26 +41,22 @@ extension URL: CodableStoreSource {
 
     public typealias Provider = URLSession
 
-    public func send(_ request: URLRequest) -> Promise<URLSession.ResponseType> {
-        return URLSession.shared.send(request)
-    }
-
-    public func get<T>() -> Promise<T?> where T : Decodable {
+    public func get(_ handler: @escaping Provider.ResponseHandler) {
         let request = URLRequest(url: self)
-        return URLSession.shared.send(request).then { response -> T? in
-            return try response.deserialize()
-        }
+        self.send(request, handler)
     }
 
-    public func set<T, U>(_ item: T) -> Promise<U?> where T : Encodable, U : Decodable {
+    public func set(_ item: Encodable, _ handler: @escaping Provider.ResponseHandler) {
         do {
             let request = try item.getURLRequest(url: self, method: "POST")
-            return URLSession.shared.send(request).then { response -> U? in
-                return try response.deserialize()
-            }
+            self.send(request, handler)
         } catch {
-            return Promise(error: error)
+            handler(nil, error)
         }
+    }
+
+    public func send(_ request: Provider.RequestType, _ handler: @escaping Provider.ResponseHandler) {
+        URLSession.shared.send(request, handler)
     }
 
     public func appending(_ path: String) -> URL {

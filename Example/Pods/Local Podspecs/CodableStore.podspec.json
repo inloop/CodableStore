@@ -21,7 +21,7 @@
   "source_files": "CodableStore/Classes/**/*",
   "dependencies": {
     "PromiseKit": [
-      "~> 4.4"
+      "~> 6.5"
     ]
   }
 }

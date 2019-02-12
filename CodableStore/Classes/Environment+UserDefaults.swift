@@ -41,13 +41,16 @@ extension CodableStoreUserDefaultsEnvironment {
     public typealias GET<T: Decodable> = CodableStoreEnvironmentUserDefaultsEndpoint<T>
     public typealias SET<U: Encodable, T: Decodable> = CodableStoreEnvironmentUserDefaultsPayloadEndpoint<U,T>
 
-    public static func request<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> ProviderRequestType {
+    public static func request<T>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> CodableStoreRequest<T,Self> {
+        return CodableStoreRequest(source: self.sourceBase, request: self.providerRequest(endpoint))
+    }
+
+    public static func providerRequest<T: Decodable>(_ endpoint: CodableStoreEnvironmentEndpoint<T>) -> ProviderRequestType {
         let source = sourceBase.appending(endpoint.path)
 
         if let endpoint = endpoint as? CodableStoreEnvironmentUserDefaultsEndpoint<T> {
             return endpoint.getRequest()
         }
-
         return UserDefaultsCodableStoreRequest(method: .get, key: source)
     }
 }
