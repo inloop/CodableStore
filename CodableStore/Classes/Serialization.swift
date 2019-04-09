@@ -24,13 +24,13 @@ public protocol CustomKeyDecodable: Decodable {
 }
 
 public extension Encodable {
-    public func serialize<T: CodableStoreSerializer>() throws -> T {
+    func serialize<T: CodableStoreSerializer>() throws -> T {
         return try T.serialize(data: self)
     }
 }
 
 public extension Decodable {
-    public static func deserialize<T: CodableStoreDeserializer>(input: T) throws -> Self {
+    static func deserialize<T: CodableStoreDeserializer>(input: T) throws -> Self {
         return try input.deserialize()
     }
 }
